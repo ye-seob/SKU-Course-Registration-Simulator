@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mydatabase?useSSL=false&serverTimezone=Asia/Seoul
+    username: yeseob
+    password: kablose12!!
+    jpa:
+      hibernate:
+        ddl-auto: update
+        properties:
+        hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
