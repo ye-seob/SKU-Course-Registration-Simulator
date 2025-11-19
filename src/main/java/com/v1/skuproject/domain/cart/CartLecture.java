@@ -1,4 +1,5 @@
-package com.v1.skuproject.domain;
+package com.v1.skuproject.domain.cart;
+import com.v1.skuproject.domain.lecture.Lecture;
 
 import jakarta.persistence.*;
 import lombok.*;

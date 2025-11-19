@@ -1,4 +1,4 @@
-package com.v1.skuproject.domain;
+package com.v1.skuproject.domain.lecture;
 
 public enum LectureType {
     MAJOR_CORE,        // 전공핵심

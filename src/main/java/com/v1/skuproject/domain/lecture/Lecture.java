@@ -1,5 +1,6 @@
-package com.v1.skuproject.domain;
+package com.v1.skuproject.domain.lecture;
 
+import com.v1.skuproject.domain.user.Professor;
 import jakarta.persistence.*;
 import lombok.*;
 

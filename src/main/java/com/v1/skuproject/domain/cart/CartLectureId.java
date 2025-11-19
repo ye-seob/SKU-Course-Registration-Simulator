@@ -1,4 +1,4 @@
-package com.v1.skuproject.domain;
+package com.v1.skuproject.domain.cart;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

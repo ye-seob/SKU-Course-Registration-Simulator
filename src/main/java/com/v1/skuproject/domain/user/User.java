@@ -1,4 +1,4 @@
-package com.v1.skuproject.domain;
+package com.v1.skuproject.domain.user;
 
 import jakarta.persistence.*;
 import lombok.*;
