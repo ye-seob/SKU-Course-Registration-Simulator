@@ -1,5 +1,6 @@
 package com.v1.skuproject.domain.cart;
 
+import com.v1.skuproject.domain.room.Room;
 import com.v1.skuproject.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,10 +20,10 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // User - Cart 1 : 1
+    // Room - Cart 1 : 1
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     // Cart -> CartLecture 1:N
     @OneToMany(mappedBy = "cart")
