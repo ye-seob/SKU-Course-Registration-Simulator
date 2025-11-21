@@ -1,5 +1,6 @@
 package com.v1.skuproject.domain.lecture;
 
+import com.v1.skuproject.domain.user.Major;
 import com.v1.skuproject.domain.user.Professor;
 import jakarta.persistence.*;
 import lombok.*;
@@ -53,4 +54,8 @@ public class Lecture {
     // 단순 문자열, 필요 시 JSON 또는 별도 테이블로 확장 가능
     @Column(nullable = false)
     private String schedule;
+
+    // 어떤 학과의 전공인지, 교양이라면 null
+    @Column(nullable = true)
+    private Major major;
 }

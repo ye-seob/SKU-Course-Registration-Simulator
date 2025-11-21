@@ -25,6 +25,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    //학과
+    @Column(unique = true)
+    private  Major major;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

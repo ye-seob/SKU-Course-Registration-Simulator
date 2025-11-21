@@ -1,5 +1,6 @@
 package com.v1.skuproject.repository;
 
+import com.v1.skuproject.domain.user.Major;
 import com.v1.skuproject.domain.user.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ class UserRepositoryTest {
                 .studentId(2023216049)
                 .name("변예섭")
                 .password("1234")
+                .major(Major.SOFTWARE)
                 .build();
 
         userRepository.save(user);
@@ -47,6 +49,7 @@ class UserRepositoryTest {
                 .studentId(2023216049)
                 .name("변예섭")
                 .password("1234")
+                .major(Major.SOFTWARE)
                 .build();
 
         userRepository.save(user);
@@ -67,6 +70,7 @@ class UserRepositoryTest {
                 .studentId(2023216049)
                 .name("변예섭")
                 .password("1234")
+                .major(Major.SOFTWARE)
                 .build();
 
         userRepository.save(user);
@@ -86,6 +90,7 @@ class UserRepositoryTest {
                 .studentId(2023216049)
                 .name("변예섭")
                 .password("1234")
+                .major(Major.SOFTWARE)
                 .build();
 
         userRepository.save(user);
