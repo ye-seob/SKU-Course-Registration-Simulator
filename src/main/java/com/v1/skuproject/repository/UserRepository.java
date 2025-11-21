@@ -1,0 +1,20 @@
+package com.v1.skuproject.repository;
+
+import com.v1.skuproject.domain.user.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface UserRepository extends JpaRepository<User,Long> {
+
+    Optional<User> findByStudentId(int studentId);
+
+    Optional<User> findByStudentIdAndPassword(int studentId, String password);
+
+    Boolean existsByStudentId(int studentId);
+
+    long deleteByStudentId(int studentId);
+
+}

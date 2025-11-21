@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "user")
+@Table(name = "users")
 @Builder
 public class User {
     @Id
@@ -17,7 +17,7 @@ public class User {
     private Long id;
 
     @Column(name = "student_id", nullable = false, unique = true)
-    private Long studentId;
+    private int studentId;
 
     @Column(nullable = false)
     private String name;
@@ -25,8 +25,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    //학과
+    @Column(unique = true)
+    private  Major major;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
 
     // 생성 시 자동으로 createdAt 세팅
     @PrePersist
