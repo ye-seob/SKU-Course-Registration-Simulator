@@ -1,8 +1,9 @@
 package com.v1.skuproject.domain.cart;
-import com.v1.skuproject.domain.lecture.Lecture;
 
+import com.v1.skuproject.domain.lecture.Lecture;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,7 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class CartLecture {
-
     @EmbeddedId
     private CartLectureId id;
 
