@@ -2,6 +2,7 @@ package com.v1.skuproject.domain.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -26,17 +27,12 @@ public class User {
     private String password;
 
     //학과
-    @Column(unique = true)
+    @Column(unique = false, nullable = false)
+    @Enumerated(EnumType.STRING)
     private  Major major;
 
+
     @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
-
-
-    // 생성 시 자동으로 createdAt 세팅
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
-
 }
