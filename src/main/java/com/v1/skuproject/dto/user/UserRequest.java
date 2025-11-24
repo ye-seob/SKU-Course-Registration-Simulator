@@ -16,8 +16,6 @@ public class UserRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SignUp {
-
-        @NotBlank(message = "학번을 입력해 주세요.")
         private int studentId;
 
         @NotBlank(message = "이름을 입력해 주세요.")
@@ -36,8 +34,6 @@ public class UserRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Login {
-
-        @NotBlank(message = "학번을 입력해 주세요.")
         private int studentId;
 
         @NotBlank(message = "비밀번호를 입력해 주세요.")
