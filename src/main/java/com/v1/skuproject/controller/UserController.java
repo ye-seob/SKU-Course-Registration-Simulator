@@ -1,47 +1,44 @@
 package com.v1.skuproject.controller;
 
-import com.v1.skuproject.dto.user.UserRequest.Login;
-import com.v1.skuproject.dto.user.UserRequest.SignUp;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.service.UserService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-// 추후 로그인 회원가입 AuthController로 분리
-//  jwt 추가
-// 권한 검증 추가하기
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
+
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<Long> signUp(@Valid @RequestBody SignUp request) {
-        Long userId = userService.createUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userId);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@Valid @RequestBody Login request) {
-        UserDto response = userService.login(request);
-
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/id/{userId}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("userId") Long userId) {
+    /**
+     유저 정보 조회
+     jwt  필요
+     */
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getUser(Authentication authentication) {
+        // 인증 객체에서 현재 로그인한 사용자의 id를 가져옴
+        Long userId = (Long) authentication.getPrincipal();
         UserDto response = userService.getUserById(userId);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/id/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("userId") Long userId) {
+    /**
+     회원 탈퇴
+     jwt  필요
+     */
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteUser(Authentication authentication) {
+        // 인증 객체에서 현재 로그인한 사용자의 id를 가져옴
+        Long userId = (Long) authentication.getPrincipal();
         userService.deleteUserById(userId);
         return ResponseEntity.noContent().build();
     }
