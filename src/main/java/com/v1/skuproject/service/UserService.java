@@ -1,5 +1,6 @@
 package com.v1.skuproject.service;
 
+import com.v1.skuproject.config.jwt.JwtProvider;
 import com.v1.skuproject.domain.user.User;
 import com.v1.skuproject.dto.user.UserRequest;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public Long createUser(UserRequest.SignUp request){
@@ -35,14 +37,17 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDto login(UserRequest.Login request) {
+
         User user = userRepository.findByStudentId(request.getStudentId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+        // JWT 생성
+        String token = jwtProvider.generateToken(user.getId(), user.getStudentId());
 
-        return UserDto.from(user);
+        return UserDto.from(user, token);
     }
 
     @Transactional(readOnly = true)
@@ -50,7 +55,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        return UserDto.from(user);
+        return UserDto.from(user, null);
     }
 
     @Transactional
@@ -58,6 +63,6 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        userRepository.deleteById(userId);
+        userRepository.delete(user);
     }
 }
