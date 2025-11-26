@@ -2,10 +2,7 @@ package com.v1.skuproject.dto.user;
 
 import com.v1.skuproject.domain.user.Major;
 import com.v1.skuproject.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 public class UserResponse {
@@ -13,6 +10,7 @@ public class UserResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @ToString
     public static class UserDto {
         private Long id;
         private int studentId;

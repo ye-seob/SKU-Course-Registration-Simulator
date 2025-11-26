@@ -4,10 +4,7 @@ import com.v1.skuproject.domain.user.Major;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 public class UserRequest {
 
@@ -15,6 +12,7 @@ public class UserRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @ToString
     public static class SignUp {
         private int studentId;
 
@@ -33,6 +31,7 @@ public class UserRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @ToString
     public static class Login {
         private int studentId;
 
