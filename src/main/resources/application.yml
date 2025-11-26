@@ -13,3 +13,7 @@ spring:
       dialect: org.hibernate.dialect.MySQL8Dialect
 jwt:
   secret: "MzJieXRlc2VjcmV0a2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTA="
+logging:
+  level:
+    com:
+      example=DEBUG:
