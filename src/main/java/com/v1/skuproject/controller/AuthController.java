@@ -5,6 +5,7 @@ import com.v1.skuproject.dto.user.UserRequest.SignUp;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -24,13 +26,17 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Long> signUp(@Valid @RequestBody SignUp request) {
+        log.info("Signup 컨트롤러 진입" + request.toString());
         Long userId = userService.createUser(request);
+        log.debug("Signup 성공  userId: {}", userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(userId);
     }
 
     @PostMapping("/login")
     public ResponseEntity<UserDto> login(@Valid @RequestBody Login request) {
+        log.info("login 컨트롤러 진입" + request.toString());
         UserDto response = userService.login(request);
+        log.debug("Login 성공  userId: {}", response.toString());
         return ResponseEntity.ok(response);
     }
 }

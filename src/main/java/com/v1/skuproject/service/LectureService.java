@@ -4,12 +4,14 @@ import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.domain.lecture.LectureType;
 import com.v1.skuproject.domain.user.Major;
 import com.v1.skuproject.repository.LectureRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class LectureService {
@@ -22,6 +24,9 @@ public class LectureService {
 
 
     public List<Lecture> searchLectures(Major major, LectureType type, String keyword) {
+        log.info("searchLectures 서비스 호출 - request: major={}, type={}, keyword={}",
+                major, type, keyword);
+
         // Specification을 이용한 동적 쿼리 생성
         List<Lecture> lectures = lectureRepository.findAll((root, query, cb) -> {
 
@@ -45,7 +50,7 @@ public class LectureService {
             return predicates;
         });
 
-        return lectures.stream()
+        List<Lecture> result = lectures.stream()
                 .map(l -> Lecture.builder()
                         .id(l.getId())
                         .lectureName(l.getLectureName())
@@ -55,5 +60,8 @@ public class LectureService {
                         .capacity(l.getCapacity())
                         .build())
                 .collect(Collectors.toList());
+
+        log.info("searchLectures 성공 - result count: {}", result.size());
+        return result;
     }
 }

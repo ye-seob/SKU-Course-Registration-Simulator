@@ -6,10 +6,12 @@ import com.v1.skuproject.dto.user.UserRequest;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -19,6 +21,8 @@ public class UserService {
 
     @Transactional
     public Long createUser(UserRequest.SignUp request){
+        log.info("createUser 서비스 호출  request: {}",
+                request.toString());
         if(userRepository.existsByStudentId(request.getStudentId())){
             throw new IllegalArgumentException("이미 존재하는 학번입니다.");
         }
@@ -32,11 +36,14 @@ public class UserService {
                 .password(encodedPassword)
                 .build();
 
-        return userRepository.save(user).getId();
+        Long userId = userRepository.save(user).getId();
+        log.info("createUser 성공  result: userId={}", userId);
+        return userId;
     }
 
     @Transactional(readOnly = true)
     public UserDto login(UserRequest.Login request) {
+        log.info("login 서비스 호출  request: {}", request.toString());
 
         User user = userRepository.findByStudentId(request.getStudentId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
@@ -47,22 +54,30 @@ public class UserService {
         // JWT 생성
         String token = jwtProvider.generateToken(user.getId(), user.getStudentId());
 
-        return UserDto.from(user, token);
+        UserDto dto = UserDto.from(user, token);
+        log.info("login 성공  result: {}", dto.toString());
+        return dto;
     }
-
     @Transactional(readOnly = true)
     public UserDto getUserById(Long userId){
+        log.info("getUserById 서비스 호출  userId: {}", userId);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        return UserDto.from(user, null);
+        UserDto dto = UserDto.from(user, null);
+        log.info("getUserById 성공  result: {}", dto.toString());
+        return dto;
     }
 
     @Transactional
     public void deleteUserById(Long userId){
+        log.info("deleteUserById 서비스 호출  userId: {}", userId);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         userRepository.delete(user);
+        log.info("deleteUserById 성공  userId: {}", userId);
     }
 }
