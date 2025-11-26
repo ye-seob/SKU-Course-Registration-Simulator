@@ -1,7 +1,6 @@
 package com.v1.skuproject.domain.lecture;
 
 import com.v1.skuproject.domain.user.Major;
-import com.v1.skuproject.domain.user.Professor;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,10 +16,8 @@ public class Lecture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 교수와 N:1
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "professor_id", nullable = false)
-    private Professor professor;
+    @Column(nullable = false)
+    private String professor;
 
     // 강의명
     @Column(name = "lecture_name", nullable = false)
@@ -47,6 +44,10 @@ public class Lecture {
     @Column(nullable = false)
     private int capacity;
 
+    // 현재 수강신청한 인원
+    @Column(nullable = false)
+    private int enrollment;
+
     // 평점
     @Column(nullable = false)
     private double rating;
@@ -57,5 +58,6 @@ public class Lecture {
 
     // 어떤 학과의 전공인지, 교양이라면 null
     @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
     private Major major;
 }
