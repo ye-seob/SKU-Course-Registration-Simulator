@@ -2,6 +2,7 @@ package com.v1.skuproject.config;
 
 import com.v1.skuproject.config.jwt.JwtAuthenticationFilter;
 import com.v1.skuproject.config.jwt.JwtProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,13 +16,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class Security {
 
     private final JwtProvider jwtProvider;
-
-    public Security(JwtProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,7 +35,10 @@ public class Security {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/signup"
+                                "/api/v1/auth/signup",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -51,9 +52,6 @@ public class Security {
         return http.build();
     }
 
-    /**
-     * 비밀번호 암호화를 위한 BCryptPasswordEncoder Bean
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

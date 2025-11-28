@@ -4,9 +4,13 @@ import com.v1.skuproject.dto.user.UserRequest.Login;
 import com.v1.skuproject.dto.user.UserRequest.SignUp;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.service.UserService;
+import com.v1.skuproject.util.response.ApiResponse;
+import com.v1.skuproject.util.response.ResponseHandler;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,28 +19,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
+@Tag(name = "Auth", description = "회원가입 및 로그인 관련 API")
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final UserService userService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
-
+    @Operation( summary = "회원가입")
     @PostMapping("/signup")
-    public ResponseEntity<Long> signUp(@Valid @RequestBody SignUp request) {
+    public ResponseEntity<ApiResponse<Long>> signUp(@Valid @RequestBody SignUp request) {
         log.info("Signup 컨트롤러 진입" + request.toString());
         Long userId = userService.createUser(request);
+
         log.debug("Signup 성공  userId: {}", userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userId);
+
+        return ResponseHandler.ok(userId);
     }
 
+    @Operation( summary = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@Valid @RequestBody Login request) {
+    public ResponseEntity<ApiResponse<UserDto>> login(@Valid @RequestBody Login request) {
         log.info("login 컨트롤러 진입" + request.toString());
         UserDto response = userService.login(request);
+
         log.debug("Login 성공  userId: {}", response.toString());
-        return ResponseEntity.ok(response);
+
+        return ResponseHandler.ok(response);
     }
 }
