@@ -17,3 +17,6 @@ logging:
   level:
     com:
       example=DEBUG:
+springdoc:
+  override-with-generic-response: false
+  #응답이 자동으로 변환하지 않도록 제한하기 때문에 충돌을 방지한다
