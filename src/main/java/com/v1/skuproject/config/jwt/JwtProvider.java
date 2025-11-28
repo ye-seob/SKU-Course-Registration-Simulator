@@ -52,8 +52,8 @@ public class JwtProvider {
 
             return true;
         } catch (JwtException e) {
-            // 서명 오류, 만료, 변조 등 모든 예외 처리
-            throw new BaseException(ErrorCode.TOKEN_INVALID);
+            System.out.println(e.toString());
+            return false;
         }
     }
 
