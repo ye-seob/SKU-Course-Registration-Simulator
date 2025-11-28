@@ -1,5 +1,7 @@
 package com.v1.skuproject.config.jwt;
 
+import com.v1.skuproject.util.exception.BaseException;
+import com.v1.skuproject.util.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -50,8 +52,8 @@ public class JwtProvider {
 
             return true;
         } catch (JwtException e) {
-            // 서명 오류, 만료, 변조 등 모든 예외 처리 → false 반환
-            return false;
+            // 서명 오류, 만료, 변조 등 모든 예외 처리
+            throw new BaseException(ErrorCode.TOKEN_INVALID);
         }
     }
 
@@ -59,22 +61,28 @@ public class JwtProvider {
        jwt에서 userId studentId 얻기
      */
     public Long getUserId(String token) {
-        Claims body = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return body.get("userId", Long.class);
-    }
-    public int getUserStudentId(String token){
-        Claims body = Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
-
-        return body.get("studentId", Integer.class);
+        try {
+            Claims body = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return body.get("userId", Long.class);
+        } catch (JwtException e) {
+            throw new BaseException(ErrorCode.TOKEN_INVALID);
+        }
     }
 
+    public int getUserStudentId(String token) {
+        try {
+            Claims body = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return body.get("studentId", Integer.class);
+        } catch (JwtException e) {
+            throw new BaseException(ErrorCode.TOKEN_INVALID);
+        }
+    }
 }

@@ -5,6 +5,8 @@ import com.v1.skuproject.domain.user.User;
 import com.v1.skuproject.dto.user.UserRequest;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.repository.UserRepository;
+import com.v1.skuproject.util.exception.BaseException;
+import com.v1.skuproject.util.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,8 +25,9 @@ public class UserService {
     public Long createUser(UserRequest.SignUp request){
         log.info("createUser 서비스 호출  request: {}",
                 request.toString());
+
         if(userRepository.existsByStudentId(request.getStudentId())){
-            throw new IllegalArgumentException("이미 존재하는 학번입니다.");
+            throw new BaseException(ErrorCode.USER_ALREADY_EXISTS);
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -46,10 +49,10 @@ public class UserService {
         log.info("login 서비스 호출  request: {}", request.toString());
 
         User user = userRepository.findByStudentId(request.getStudentId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BaseException(ErrorCode.INVALID_CREDENTIALS);
         }
         // JWT 생성
         String token = jwtProvider.generateToken(user.getId(), user.getStudentId());
@@ -63,7 +66,7 @@ public class UserService {
         log.info("getUserById 서비스 호출  userId: {}", userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         UserDto dto = UserDto.from(user, null);
         log.info("getUserById 성공  result: {}", dto.toString());
@@ -75,7 +78,7 @@ public class UserService {
         log.info("deleteUserById 서비스 호출  userId: {}", userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() ->new BaseException(ErrorCode.USER_NOT_FOUND));
 
         userRepository.delete(user);
         log.info("deleteUserById 성공  userId: {}", userId);
