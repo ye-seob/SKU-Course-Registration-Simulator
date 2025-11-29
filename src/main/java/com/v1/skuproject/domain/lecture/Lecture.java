@@ -60,4 +60,14 @@ public class Lecture {
     @Column(nullable = true)
     @Enumerated(EnumType.STRING)
     private Major major;
+
+    public void incrementEnrollment() {
+        this.enrollment += 1;
+    }
+
+    public void decrementEnrollment() {
+        if (this.enrollment > 0) {
+            this.enrollment -= 1;
+        }
+    }
 }

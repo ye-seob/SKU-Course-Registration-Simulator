@@ -22,6 +22,11 @@ public enum ErrorCode {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "잘못된 요청입니다."),
     PARAMETER_MISSING(HttpStatus.BAD_REQUEST, "PARAMETER_MISSING", "필수 파라미터가 누락되었습니다."),
 
+    // 수강신청 관련
+    LECTURE_NOT_FOUND(HttpStatus.NOT_FOUND, "LECTURE_NOT_FOUND", "존재하지 않는 강좌입니다."),
+    CAPACITY_EXCEEDED(HttpStatus.BAD_REQUEST, "CAPACITY_EXCEEDED", "강좌 정원이 초과되었습니다."),
+    ENROLLMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "ENROLLMENT_NOT_FOUND", "신청 내역이 존재하지 않습니다."),
+
     // 서버/DB 관련
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버 오류가 발생했습니다."),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DATABASE_ERROR", "데이터베이스 처리 중 오류가 발생했습니다.");
