@@ -28,6 +28,9 @@ public class Security {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                // CORS 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 // CSRF 비활성화
                 .csrf(csrf -> csrf.disable())
 
