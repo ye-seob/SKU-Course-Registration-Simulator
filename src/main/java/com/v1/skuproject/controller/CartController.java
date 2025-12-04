@@ -1,6 +1,7 @@
 package com.v1.skuproject.controller;
 
 import com.v1.skuproject.domain.cart.CartLecture;
+import com.v1.skuproject.dto.lecture.CartLectureResponse;
 import com.v1.skuproject.service.CartService;
 import com.v1.skuproject.util.response.ApiResponse;
 import com.v1.skuproject.util.response.ResponseHandler;
@@ -26,7 +27,7 @@ public class CartController {
 
     @Operation(summary = "장바구니 담기")
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse<CartLecture>> addLectureToCart(
+    public ResponseEntity<ApiResponse<CartLectureResponse>> addLectureToCart(
             Authentication authentication,
             @RequestParam(name = "lectureId") Long lectureId
     ) {
@@ -38,7 +39,7 @@ public class CartController {
 
         log.info("장바구니 담기 성공. CartLecture ID: {}", cartLecture.getId());
 
-        return ResponseHandler.ok(cartLecture);
+        return ResponseHandler.ok(CartLectureResponse.from(cartLecture));
     }
 
 
@@ -60,7 +61,7 @@ public class CartController {
 
     @Operation(summary = "장바구니 조회")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CartLecture>>> getCartLectures(
+    public ResponseEntity<ApiResponse<List<CartLectureResponse>>> getCartLectures(
             Authentication authentication
     ) {
         Long userId = (Long) authentication.getPrincipal();
@@ -70,6 +71,6 @@ public class CartController {
 
         log.info("장바구니 조회 성공. 담긴 강의 수: {}", cartLectures.size());
 
-        return ResponseHandler.ok(cartLectures);
+        return ResponseHandler.ok(CartLectureResponse.from(cartLectures));
     }
 }
