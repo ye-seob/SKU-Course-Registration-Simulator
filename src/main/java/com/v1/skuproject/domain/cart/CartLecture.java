@@ -1,5 +1,6 @@
 package com.v1.skuproject.domain.cart;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.v1.skuproject.domain.lecture.Lecture;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,6 +17,7 @@ public class CartLecture {
     @EmbeddedId
     private CartLectureId id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("cartId")
     private Cart cart;
