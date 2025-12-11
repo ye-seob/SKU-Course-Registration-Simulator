@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -28,10 +29,10 @@ public class CartController {
     @Operation(summary = "장바구니 담기")
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<CartLectureResponse>> addLectureToCart(
-            Authentication authentication,
-            @RequestParam(name = "lectureId") Long lectureId
+        Authentication authentication,
+        @RequestBody Map<String, Long> body
     ) {
-
+        Long lectureId = body.get("lectureId");
         Long userId = (Long) authentication.getPrincipal();
         log.info("컨트롤러 진입 - 장바구니 담기. userId: {}, lectureId: {}", userId, lectureId);
 
@@ -42,14 +43,13 @@ public class CartController {
         return ResponseHandler.ok(CartLectureResponse.from(cartLecture));
     }
 
-
-    @Operation(summary = "장바구니 취소")
-    @DeleteMapping("/remove")
-    public ResponseEntity<ApiResponse<String>> removeLectureFromCart(
-            Authentication authentication,
-            @RequestParam(name = "lectureId") Long lectureId
-    ) {
-        Long userId = (Long) authentication.getPrincipal();
+	@Operation(summary = "장바구니 취소")
+	@DeleteMapping("/delete/{lectureId}")
+	public ResponseEntity<ApiResponse<String>> removeLectureFromCart(
+       		Authentication authentication,
+      		@PathVariable Long lectureId
+	)
+      {  Long userId = (Long) authentication.getPrincipal();
         log.info("컨트롤러 진입 - 장바구니 강의 삭제. userId: {}, lectureId: {}", userId, lectureId);
 
         cartService.removeLectureFromCart(userId, lectureId);
@@ -68,7 +68,6 @@ public class CartController {
         log.info("컨트롤러 진입 - 장바구니 조회. userId: {}", userId);
 
         List<CartLecture> cartLectures = cartService.getCartLectures(userId);
-
         log.info("장바구니 조회 성공. 담긴 강의 수: {}", cartLectures.size());
 
         return ResponseHandler.ok(CartLectureResponse.from(cartLectures));
