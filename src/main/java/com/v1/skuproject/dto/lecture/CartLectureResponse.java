@@ -37,7 +37,9 @@ public class CartLectureResponse {
     private final LectureType type;
 
     // 학점
-    private final Integer credit;
+    private final Double credit;
+
+    private final Double time;
 
     // 강의 시간표 정보 (예: 월(9:00~11:45))
     private final String schedule;
@@ -72,6 +74,7 @@ public class CartLectureResponse {
                 .classNumber(cartLecture.getLecture().getClassNumber())
                 .type(cartLecture.getLecture().getType())
                 .credit(cartLecture.getLecture().getCredit())
+                .time(cartLecture.getLecture().getTime())
                 .schedule(cartLecture.getLecture().getSchedule())
                 .major(cartLecture.getLecture().getMajor())
                 .enrollment(cartLecture.getLecture().getEnrollment())

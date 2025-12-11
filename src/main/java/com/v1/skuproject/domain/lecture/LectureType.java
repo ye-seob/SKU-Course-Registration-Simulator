@@ -1,9 +1,11 @@
 package com.v1.skuproject.domain.lecture;
 
 public enum LectureType {
-    MAJOR_CORE,        // 전공핵심
-    MAJOR_ELECTIVE,    // 전공선택
-
-    GENERAL_CORE,      // 교양필수
-    GENERAL_ELECTIVE   // 교양선택
+    전핵,
+    전선,
+    교필,
+    균교,
+    교선,
+    자선,
+    교직
 }
