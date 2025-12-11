@@ -6,7 +6,7 @@ spring:
     password: kablose12!!
   jpa:
     hibernate:
-      show-sql: true
+      show-sql: update
       ddl-auto: update
       properties:
       hibernate:

@@ -23,8 +23,8 @@ public enum ErrorCode {
     PARAMETER_MISSING(HttpStatus.BAD_REQUEST, "PARAMETER_MISSING", "필수 파라미터가 누락되었습니다."),
 
     // 수강신청 관련
-    LECTURE_NOT_FOUND(HttpStatus.NOT_FOUND, "LECTURE_NOT_FOUND", "존재하지 않는 강좌입니다."),
-    CAPACITY_EXCEEDED(HttpStatus.BAD_REQUEST, "CAPACITY_EXCEEDED", "강좌 정원이 초과되었습니다."),
+    LECTURE_NOT_FOUND(HttpStatus.NOT_FOUND, "LECTURE_NOT_FOUND", "존재하지 않는 강의입니다."),
+    CAPACITY_EXCEEDED(HttpStatus.BAD_REQUEST, "CAPACITY_EXCEEDED", "강의 정원이 초과되었습니다."),
     ENROLLMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "ENROLLMENT_NOT_FOUND", "신청 내역이 존재하지 않습니다."),
 
     // 서버/DB 관련

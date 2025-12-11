@@ -38,15 +38,19 @@ public class Lecture {
 
     // 학점
     @Column(nullable = false)
-    private int credit;
+    private double credit;
+
+    // 시간 몇시간 강의인지
+    @Column(nullable = false)
+    private  double time;
 
     // 정원
     @Column(nullable = false)
-    private int capacity;
+    private Integer capacity;
 
     // 현재 수강신청한 인원
     @Column(nullable = false)
-    private int enrollment;
+    private Integer enrollment;
 
     // 평점
     @Column(nullable = false)
