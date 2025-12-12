@@ -40,7 +40,7 @@ public class Lecture {
     @Column(nullable = false)
     private double credit;
 
-    // 시간 몇시간 강의인지
+    // 몇시간 강의인지
     @Column(nullable = false)
     private  double time;
 
@@ -56,6 +56,9 @@ public class Lecture {
     @Column(nullable = false)
     private double rating;
 
+    @Column(nullable = true)
+    private String gradingMethod;
+
     // 단순 문자열, 필요 시 JSON 또는 별도 테이블로 확장 가능
     @Column(nullable = false)
     private String schedule;
@@ -66,7 +69,9 @@ public class Lecture {
     private Major major;
 
     public void incrementEnrollment() {
-        this.enrollment += 1;
+        if (this.enrollment < this.capacity) {
+            this.enrollment += 1;
+        }
     }
 
     public void decrementEnrollment() {

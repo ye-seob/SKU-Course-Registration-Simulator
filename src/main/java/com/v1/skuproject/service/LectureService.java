@@ -61,6 +61,7 @@ public class LectureService {
                         .professor(l.getProfessor())
                         .schedule(l.getSchedule())
                         .rating(l.getRating())
+                        .gradingMethod(l.getGradingMethod())
                         .lectureCode(l.getLectureCode())
                         .type(l.getType())
                         .capacity(l.getCapacity())
