@@ -33,6 +33,23 @@ public class User {
     @Enumerated(EnumType.STRING)
     private  Major major;
 
+    // 부전공 (없으면 null)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "minor")
+    private Major minor;
+
+    // 융합전공 (없으면 null)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "convergence_major")
+    private Major convergenceMajor;
+
+    // 학년
+    @Column(nullable = false)
+    private int grade;
+
+    // 최대 신청 가능 학점
+    @Column(name = "max_credit" ,nullable = false)
+    private int maxCredit;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
