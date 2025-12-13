@@ -23,10 +23,9 @@ public class UserService {
 
     @Transactional
     public Long createUser(UserRequest.SignUp request){
-        log.info("createUser 서비스 호출  request: {}",
-                request.toString());
 
         if(userRepository.existsByStudentId(request.getStudentId())){
+
             throw new BaseException(ErrorCode.USER_ALREADY_EXISTS);
         }
 
@@ -40,13 +39,14 @@ public class UserService {
                 .build();
 
         Long userId = userRepository.save(user).getId();
-        log.info("createUser 성공  result: userId={}", userId);
+
+        log.info("회원가입 성공 userId={}", userId);
+
         return userId;
     }
 
     @Transactional(readOnly = true)
     public UserDto login(UserRequest.Login request) {
-        log.info("login 서비스 호출  request: {}", request.toString());
 
         User user = userRepository.findByStudentId(request.getStudentId())
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
@@ -54,33 +54,36 @@ public class UserService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BaseException(ErrorCode.INVALID_CREDENTIALS);
         }
+
         // JWT 생성
         String token = jwtProvider.generateToken(user.getId(), user.getStudentId());
 
-        UserDto dto = UserDto.from(user, token);
-        log.info("login 성공  result: {}", dto.toString());
-        return dto;
+        UserDto userDto = UserDto.from(user, token);
+
+        log.info("로그인 성공 userId={}", user.getId());
+
+        return userDto;
     }
+
     @Transactional(readOnly = true)
     public UserDto getUserById(Long userId){
-        log.info("getUserById 서비스 호출  userId: {}", userId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
-        UserDto dto = UserDto.from(user, null);
-        log.info("getUserById 성공  result: {}", dto.toString());
-        return dto;
+        UserDto userDto = UserDto.from(user, null);
+
+        return userDto;
     }
 
     @Transactional
     public void deleteUserById(Long userId){
-        log.info("deleteUserById 서비스 호출  userId: {}", userId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->new BaseException(ErrorCode.USER_NOT_FOUND));
 
         userRepository.delete(user);
-        log.info("deleteUserById 성공  userId: {}", userId);
+
+        log.info("회원 삭제 성공  userId: {}", userId);
     }
 }

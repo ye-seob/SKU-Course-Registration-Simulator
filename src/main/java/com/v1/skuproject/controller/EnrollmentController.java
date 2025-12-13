@@ -32,11 +32,9 @@ public class EnrollmentController {
             @RequestParam(name = "lectureId") Long lectureId
     ) {
         Long userId = (Long) authentication.getPrincipal();
-        log.info("수강 신청 요청 - userId: {}, lectureId: {}", userId, lectureId);
 
         EnrollmentResponse response = enrollmentService.enroll(userId, lectureId);
 
-        log.info("수강 신청 결과 - status: {}, reason: {}", response.getStatus(), response.getReason());
 
         return ResponseHandler.ok(response);
     }

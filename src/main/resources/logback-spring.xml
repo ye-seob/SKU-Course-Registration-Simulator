@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- ================= 공통 ================= -->
+    <property name="CONSOLE_PATTERN"
+              value="%d{HH:mm:ss.SSS} %highlight(%-5level) traceId=%X{traceId:-NO_TRACE} [%thread] %cyan(%logger{40}) - %msg%n"/>
+
+    <property name="FILE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level traceId=%X{traceId:-NO_TRACE} %logger - %msg%n"/>
+
+    <!-- ================= 콘솔 ================= -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ================= 파일 ================= -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+        </encoder>
+
+        <!-- 운영에서는 INFO 이상만 파일에 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <!-- ================= 개발(dev) ================= -->
+    <springProfile name="dev">
+
+        <!-- 전체 로그는 INFO -->
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+
+        <!-- 우리 프로젝트 코드만 DEBUG -->
+        <logger name="com.v1.skuproject" level="DEBUG"/>
+
+        <!-- 스프링 / 톰캣 / 하이버네이트는 조용히 -->
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.hibernate" level="INFO"/>
+        <logger name="org.apache.catalina" level="INFO"/>
+
+    </springProfile>
+
+    <!-- ================= 운영(prod) ================= -->
+    <springProfile name="prod">
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+
+        <!-- 운영에서도 우리 코드 로그는 INFO -->
+        <logger name="com.v1.skuproject" level="INFO"/>
+
+    </springProfile>
+
+</configuration>

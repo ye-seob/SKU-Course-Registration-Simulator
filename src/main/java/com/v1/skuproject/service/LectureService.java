@@ -24,8 +24,7 @@ public class LectureService {
 
 
     public List<Lecture> searchLectures(Major major, LectureType type, String keyword) {
-        log.info("searchLectures 서비스 호출 - request: major={}, type={}, keyword={}",
-                major, type, keyword);
+        log.debug("강의 검색 조건 major={}, type={}, keyword={}", major, type, keyword);
 
         // Specification을 이용한 동적 쿼리 생성
         List<Lecture> lectures = lectureRepository.findAll((root, query, cb) -> {
@@ -68,7 +67,6 @@ public class LectureService {
                         .build())
                 .collect(Collectors.toList());
 
-        log.info("searchLectures 성공 - result count: {}", result.size());
         return result;
     }
 }

@@ -18,6 +18,7 @@ public class TraceIdUtil {
     }
 
     public static void clear() {
-        MDC.clear();
+        MDC.remove("traceId");
+        MDC.remove("userId");
     }
 }

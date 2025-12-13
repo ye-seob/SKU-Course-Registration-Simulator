@@ -32,8 +32,6 @@ public class CartService {
 
     @Transactional
     public CartLecture addLectureToCart(Long userId, Long lectureId) {
-        log.info("장바구니 담기 서비스 진입 - userId: {}, lectureId: {}", userId, lectureId);
-
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
@@ -45,7 +43,7 @@ public class CartService {
         Cart cart = cartRepository.findByUser(user)
                 .orElseGet(() -> {
                     Cart newCart = Cart.builder().user(user).build();
-                    log.debug("새로운 장바구니 생성: {}", newCart);
+
                     return cartRepository.save(newCart);
                 });
 
@@ -53,8 +51,6 @@ public class CartService {
         Optional<CartLecture> existingCartLecture = cartLectureRepository.findByCartAndLecture(cart, lecture);
 
         if (existingCartLecture.isPresent()) {
-            log.warn("이미 장바구니에 담긴 강의입니다. 예외 발생 - userId: {}, lectureId: {}", userId, lectureId);
-
             throw new BaseException(ErrorCode.INVALID_REQUEST);
         }
 
@@ -68,15 +64,12 @@ public class CartService {
                 .addedAt(LocalDateTime.now())
                 .build();
 
-        log.info("장바구니에 강의 담기 성공 - CartLecture: {}", cartLecture);
         return cartLectureRepository.save(cartLecture);
     }
 
 
     @Transactional
     public void removeLectureFromCart(Long userId, Long lectureId) {
-        log.info("장바구니 강의 삭제 서비스 진입 - userId: {}, lectureId: {}", userId, lectureId);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
@@ -85,19 +78,16 @@ public class CartService {
 
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> {
-                    log.warn("장바구니가 존재하지 않아 삭제할 수 없습니다. - userId: {}", userId);
                     throw new BaseException(ErrorCode.INVALID_REQUEST);
                 });
 
 
         cartLectureRepository.deleteByCartAndLecture(cart, lecture);
-        log.info("장바구니 강의 삭제 성공 - userId: {}, lectureId: {}", userId, lectureId);
     }
 
 
     @Transactional(readOnly = true)
     public List<CartLecture> getCartLectures(Long userId) {
-        log.info("장바구니 조회 서비스 진입 - userId: {}", userId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
@@ -105,14 +95,12 @@ public class CartService {
         Optional<Cart> cartOptional = cartRepository.findByUser(user);
 
         if (cartOptional.isEmpty()) {
-            log.info("해당 유저의 장바구니가 존재하지 않습니다. - userId: {}", userId);
             return List.of();
         }
 
         Cart cart = cartOptional.get();
         
         List<CartLecture> cartLectures = cartLectureRepository.findByCart(cart);
-        log.info("장바구니 조회 성공. 담긴 강의 수: {}", cartLectures.size());
 
         return cartLectures;
     }

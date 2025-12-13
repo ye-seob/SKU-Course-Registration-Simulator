@@ -26,24 +26,20 @@ public class AuthController {
 
     private final UserService userService;
 
-    @Operation( summary = "회원가입")
+    @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Long>> signUp(@Valid @RequestBody SignUp request) {
-        log.info("Signup 컨트롤러 진입" + request.toString());
-        Long userId = userService.createUser(request);
 
-        log.debug("Signup 성공  userId: {}", userId);
+        Long userId = userService.createUser(request);
 
         return ResponseHandler.ok(userId);
     }
 
-    @Operation( summary = "로그인")
+    @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserDto>> login(@Valid @RequestBody Login request) {
-        log.info("login 컨트롤러 진입" + request.toString());
-        UserDto response = userService.login(request);
 
-        log.debug("Login 성공  userId: {}", response.toString());
+        UserDto response = userService.login(request);
 
         return ResponseHandler.ok(response);
     }

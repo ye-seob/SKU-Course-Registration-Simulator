@@ -1,22 +1,22 @@
 spring:
+  profiles:
+    active: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/mydatabase?useSSL=false&serverTimezone=Asia/Seoul
     username: yeseob
     password: kablose12!!
+
   jpa:
+    show-sql: true
     hibernate:
-      show-sql: update
       ddl-auto: update
-      properties:
+    properties:
       hibernate:
-      dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
 jwt:
   secret: "MzJieXRlc2VjcmV0a2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTA="
-logging:
-  level:
-    com:
-      example=DEBUG:
+
 springdoc:
   override-with-generic-response: false
-  #응답이 자동으로 변환하지 않도록 제한하기 때문에 충돌을 방지한다

@@ -10,7 +10,4 @@ public class ExceptionResponse {
     private final String code;// 오류의 상세 코드
 
     private final String message;
-
-    private final String traceId;
-
 }
