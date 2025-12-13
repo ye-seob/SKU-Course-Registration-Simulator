@@ -67,7 +67,6 @@ public class CartLectureResponse {
                 .cartId(cartLecture.getId().getCartId())
                 .lectureId(cartLecture.getId().getLectureId())
 
-
                 .lectureName(cartLecture.getLecture().getLectureName())
                 .professor(cartLecture.getLecture().getProfessor())
                 .lectureCode(cartLecture.getLecture().getLectureCode())

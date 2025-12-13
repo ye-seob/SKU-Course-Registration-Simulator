@@ -4,8 +4,8 @@ import com.v1.skuproject.domain.user.Major;
 import com.v1.skuproject.domain.user.User;
 import lombok.*;
 
-
 public class UserResponse {
+
     @Getter
     @Builder
     @NoArgsConstructor
@@ -15,7 +15,14 @@ public class UserResponse {
         private Long id;
         private int studentId;
         private String name;
-        private Major major;
+
+        private Major major;               // 주전공
+        private Major minor;               // 부전공
+        private Major convergenceMajor;    // 융합전공
+
+        private int grade;                 // 학년
+        private int maxCredit;             // 최대 신청 학점
+
         private String token;
 
         public static UserDto from(User user, String token) {
@@ -24,6 +31,10 @@ public class UserResponse {
                     .studentId(user.getStudentId())
                     .name(user.getName())
                     .major(user.getMajor())
+                    .minor(user.getMinor())
+                    .convergenceMajor(user.getConvergenceMajor())
+                    .grade(user.getGrade())
+                    .maxCredit(user.getMaxCredit())
                     .token(token)
                     .build();
         }

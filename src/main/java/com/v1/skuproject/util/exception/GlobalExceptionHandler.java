@@ -1,7 +1,6 @@
 package com.v1.skuproject.util.exception;
 
 import com.v1.skuproject.util.response.ApiResponse;
-import com.v1.skuproject.util.traceId.TraceIdUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,15 +16,19 @@ public class GlobalExceptionHandler {
 
         ErrorCode errorCode = ex.getErrorCode();
 
-        String traceId = TraceIdUtil.getTraceId();
-
         ApiResponse<Object> response = ApiResponse.<Object>builder()
                 .success(false)
                 .data(null)
                 .code(errorCode.getCode())    // 오류 코드 (ex: U_404)
                 .message(errorCode.getMessage())
-                .traceId(traceId)
                 .build();
+
+        log.debug(
+                "예외 발생 code={}, message={}",
+                errorCode.getCode(),
+                errorCode.getMessage()
+        );
+
 
         return ResponseEntity.status(errorCode.getStatus()).body(response);
     }
@@ -33,9 +36,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleException(Exception ex) {
         //  BaseException으로 처리되지 않은 예외를 처리
-        String traceId = TraceIdUtil.getTraceId();
-        log.error("traceId={} | 예외={} | message={}", traceId, ex.getClass().getSimpleName(), ex.getMessage());
-
         ErrorCode errorCode = ErrorCode.INTERNAL_ERROR;
 
         ApiResponse<Object> response = ApiResponse.<Object>builder()
@@ -43,10 +43,14 @@ public class GlobalExceptionHandler {
                 .data(null)
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
-                .traceId(traceId)
                 .build();
 
-        log.error(response.toString());
+        log.error(
+                "예상치 못한 서버 오류 발생 type={}, message={}",
+                ex.getClass().getSimpleName(),
+                ex.getMessage()
+        );
+
         return ResponseEntity.status(errorCode.getStatus()).body(response);
     }
 }

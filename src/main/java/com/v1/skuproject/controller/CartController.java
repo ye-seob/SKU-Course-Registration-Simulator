@@ -34,11 +34,9 @@ public class CartController {
     ) {
         Long lectureId = body.get("lectureId");
         Long userId = (Long) authentication.getPrincipal();
-        log.info("컨트롤러 진입 - 장바구니 담기. userId: {}, lectureId: {}", userId, lectureId);
 
         CartLecture cartLecture = cartService.addLectureToCart(userId, lectureId);
 
-        log.info("장바구니 담기 성공. CartLecture ID: {}", cartLecture.getId());
 
         return ResponseHandler.ok(CartLectureResponse.from(cartLecture));
     }
@@ -50,11 +48,9 @@ public class CartController {
       		@PathVariable Long lectureId
 	)
       {  Long userId = (Long) authentication.getPrincipal();
-        log.info("컨트롤러 진입 - 장바구니 강의 삭제. userId: {}, lectureId: {}", userId, lectureId);
 
         cartService.removeLectureFromCart(userId, lectureId);
 
-        log.info("장바구니 강의 삭제 성공. userId: {}, lectureId: {}", userId, lectureId);
         return ResponseHandler.ok("장바구니 강의 삭제 성공");
     }
 
@@ -65,10 +61,10 @@ public class CartController {
             Authentication authentication
     ) {
         Long userId = (Long) authentication.getPrincipal();
-        log.info("컨트롤러 진입 - 장바구니 조회. userId: {}", userId);
+
 
         List<CartLecture> cartLectures = cartService.getCartLectures(userId);
-        log.info("장바구니 조회 성공. 담긴 강의 수: {}", cartLectures.size());
+
 
         return ResponseHandler.ok(CartLectureResponse.from(cartLectures));
     }

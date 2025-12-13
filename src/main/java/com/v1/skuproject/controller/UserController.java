@@ -29,10 +29,8 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDto>> getUser(Authentication authentication) {
         // 인증 객체에서 현재 로그인한 사용자의 id를 가져옴
         Long userId = (Long) authentication.getPrincipal();
-        log.info("getUser 컨트롤러 진입  userId: {}", userId);
 
         UserDto response = userService.getUserById(userId);
-        log.debug("getUser 성공  userDto: {}", response);
 
         return ResponseHandler.ok(response);
     }
@@ -43,10 +41,8 @@ public class UserController {
     public ResponseEntity<ApiResponse<String>> deleteUser(Authentication authentication) {
         // 인증 객체에서 현재 로그인한 사용자의 id를 가져옴
         Long userId = (Long) authentication.getPrincipal();
-        log.info("deleteUser 컨트롤러 진입  userId: {}", userId);
 
         userService.deleteUserById(userId);
-        log.debug("deleteUser 성공");
 
         return ResponseHandler.ok("회원 탈퇴 성공");
     }

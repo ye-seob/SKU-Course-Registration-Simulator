@@ -3,18 +3,21 @@ package com.v1.skuproject.service;
 import com.v1.skuproject.domain.enrollment.Enrollment;
 import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.domain.user.User;
+import com.v1.skuproject.dto.enrollment.EnrollmentResponse;
 import com.v1.skuproject.repository.EnrollmentRepository;
 import com.v1.skuproject.repository.LectureRepository;
 import com.v1.skuproject.repository.UserRepository;
 import com.v1.skuproject.util.exception.BaseException;
 import com.v1.skuproject.util.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class EnrollmentService {
 
@@ -22,9 +25,8 @@ public class EnrollmentService {
     private final LectureRepository lectureRepository;
     private final UserRepository userRepository;
 
-    // 수강 신청
     @Transactional
-    public boolean enroll(Long userId, Long lectureId) {
+    public EnrollmentResponse enroll(Long userId, Long lectureId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
@@ -32,51 +34,42 @@ public class EnrollmentService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
 
-        // 이미 신청했는지 확인
-        Optional<Enrollment> existing = enrollmentRepository.findByUserAndLecture(user, lecture);
-        if (existing.isPresent()) {
-            throw new BaseException(ErrorCode.INVALID_REQUEST); // 중복 신청
+        // 중복 신청
+        if (enrollmentRepository.findByUserAndLecture(user, lecture).isPresent()) {
+
+            Enrollment fail = enrollmentRepository.save(
+                    Enrollment.fail(user, lecture, "DUPLICATE")
+            );
+
+            log.info("수강신청 실패(DUPLICATE) userId={}, lectureId={}", userId, lectureId);
+            return EnrollmentResponse.from(fail);
         }
 
-        // 정원 확인
+        // 정원 초과
         if (lecture.getEnrollment() >= lecture.getCapacity()) {
-            throw new BaseException(ErrorCode.CAPACITY_EXCEEDED);
+            Enrollment fail = enrollmentRepository.save(
+                    Enrollment.fail(user, lecture, "CAPACITY_EXCEEDED")
+            );
+            log.info("수강신청 실패(CAPACITY_EXCEEDED) userId={}, lectureId={}", userId, lectureId);
+            return EnrollmentResponse.from(fail);
         }
 
-        // 수강 신청
-        Enrollment enrollment = Enrollment.builder()
-                .user(user)
-                .lecture(lecture)
-                .build();
-        enrollmentRepository.save(enrollment);
+        // 성공
+        Enrollment success = enrollmentRepository.save(
+                Enrollment.success(user, lecture)
+        );
 
         lecture.incrementEnrollment();
+
         lectureRepository.save(lecture);
 
-        return true;
-    }
+        log.info("수강신청 성공 userId={}, lectureId={}, enrollment={}/{}",
+                userId,
+                lectureId,
+                lecture.getEnrollment(),
+                lecture.getCapacity()
+        );
 
-    // 수강 취소
-    @Transactional
-    public boolean cancel(Long userId, Long lectureId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
-
-        Optional<Enrollment> enrollment = enrollmentRepository.findByUserAndLecture(user, lecture);
-
-        if (enrollment.isEmpty()) {
-            throw new BaseException(ErrorCode.ENROLLMENT_NOT_FOUND);
-        }
-
-        // 수강 취소
-        enrollmentRepository.delete(enrollment.get());
-        lecture.decrementEnrollment();
-        lectureRepository.save(lecture);
-
-        return true;
+        return EnrollmentResponse.from(success);
     }
 }

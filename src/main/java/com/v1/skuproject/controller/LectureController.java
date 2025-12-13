@@ -37,11 +37,9 @@ public class LectureController {
             @RequestParam(name = "type", required = false) LectureType type,
             @RequestParam(name = "keyword", required = false) String keyword
     ) {
-        log.info("getLectures 컨트롤러 진입  major: {}, type: {}, keyword: {}", major, type, keyword);
 
         List<Lecture> lectures = lectureService.searchLectures(major, type, keyword);
 
-        log.info("getLectures 성공  조회된 강의 수: {}", lectures.size());
 
         return ResponseHandler.ok(lectures);
     }
