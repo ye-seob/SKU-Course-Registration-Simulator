@@ -10,10 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Slf4j
@@ -24,6 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
+
+    @Operation(summary = "수강 신청 조회", description = "사용자가 신청한 강의 내역 조회")
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> list(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        List<EnrollmentResponse> response = enrollmentService.getEnrollments(userId);
+        return ResponseHandler.ok(response);
+    }
 
     @Operation(summary = "수강 신청", description = "강의 신청")
     @PostMapping("/enroll")
@@ -36,6 +43,17 @@ public class EnrollmentController {
         EnrollmentResponse response = enrollmentService.enroll(userId, lectureId);
 
 
+        return ResponseHandler.ok(response);
+    }
+
+    @Operation(summary = "수강 신청 취소", description = "강의 신청 취소")
+    @PostMapping("/cancel")
+    public ResponseEntity<ApiResponse<EnrollmentResponse>> cancel(
+            Authentication authentication,
+            @RequestParam(name = "lectureId") Long lectureId
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+        EnrollmentResponse response = enrollmentService.cancelEnrollment(userId, lectureId);
         return ResponseHandler.ok(response);
     }
 }
