@@ -1,6 +1,7 @@
 package com.v1.skuproject.service;
 
 import com.v1.skuproject.domain.enrollment.Enrollment;
+import com.v1.skuproject.domain.enrollment.EnrollmentStatus;
 import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.domain.user.User;
 import com.v1.skuproject.dto.enrollment.EnrollmentResponse;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 
 @Service
@@ -25,6 +27,17 @@ public class EnrollmentService {
     private final LectureRepository lectureRepository;
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
+    public List<EnrollmentResponse> getEnrollments(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+
+        return enrollmentRepository.findAllByUserAndStatus(user, EnrollmentStatus.SUCCESS)
+                .stream()
+                .map(EnrollmentResponse::from)
+                .toList();
+    }
+
     @Transactional
     public EnrollmentResponse enroll(Long userId, Long lectureId) {
 
@@ -35,24 +48,18 @@ public class EnrollmentService {
                 .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
 
         // 중복 신청
-        if (enrollmentRepository.findByUserAndLecture(user, lecture).isPresent()) {
-
-            Enrollment fail = enrollmentRepository.save(
-                    Enrollment.fail(user, lecture, "DUPLICATE")
-            );
-
+        if (enrollmentRepository.findByUser_IdAndLecture_Id(userId, lectureId).isPresent()) {
             log.info("수강신청 실패(DUPLICATE) userId={}, lectureId={}", userId, lectureId);
-            return EnrollmentResponse.from(fail);
+            return EnrollmentResponse.fail("중복 신청");
         }
 
         // 정원 초과
         if (lecture.getEnrollment() >= lecture.getCapacity()) {
-            Enrollment fail = enrollmentRepository.save(
-                    Enrollment.fail(user, lecture, "CAPACITY_EXCEEDED")
-            );
             log.info("수강신청 실패(CAPACITY_EXCEEDED) userId={}, lectureId={}", userId, lectureId);
-            return EnrollmentResponse.from(fail);
+            return EnrollmentResponse.fail("정원 초과");
         }
+
+
 
         // 성공
         Enrollment success = enrollmentRepository.save(
@@ -71,5 +78,28 @@ public class EnrollmentService {
         );
 
         return EnrollmentResponse.from(success);
+    }
+
+    @Transactional
+    public EnrollmentResponse cancelEnrollment(Long userId, Long lectureId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
+
+
+        Enrollment enrollment = enrollmentRepository.findByUser_IdAndLecture_Id(userId,lectureId)
+                .orElseThrow(() -> new BaseException(ErrorCode.ENROLLMENT_NOT_FOUND));
+
+
+
+       enrollmentRepository.delete(enrollment);
+
+        lecture.decrementEnrollment();
+        lectureRepository.save(lecture);
+
+        log.info("수강신청 취소 userId={}, lectureId={}", userId, lectureId);
+        return EnrollmentResponse.from(enrollment);
     }
 }

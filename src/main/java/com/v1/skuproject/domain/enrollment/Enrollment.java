@@ -34,12 +34,8 @@ public class Enrollment {
 
     // 신청 상태 (SUCCESS, FAIL, PENDING)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private EnrollmentStatus status;
-
-    // 실패 사유
-    @Column(length = 255)
-    private String reason;
 
     // 대기 시간
     @Column(name = "wait_time")
@@ -58,12 +54,4 @@ public class Enrollment {
                 .build();
     }
 
-    public static Enrollment fail(User user, Lecture lecture, String reason) {
-        return Enrollment.builder()
-                .user(user)
-                .lecture(lecture)
-                .status(EnrollmentStatus.FAIL)
-                .reason(reason)
-                .build();
-    }
 }
