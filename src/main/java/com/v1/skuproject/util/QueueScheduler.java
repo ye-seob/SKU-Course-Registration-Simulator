@@ -47,6 +47,7 @@ public class QueueScheduler {
             Long userId = Long.parseLong(data[0]);
             Long lectureId = Long.parseLong(data[1]);
 
+
             try {
                 enrollmentService.enroll(userId, lectureId);
                 log.info("[처리완료] 유저: " + userId + ", 강의: " + lectureId);

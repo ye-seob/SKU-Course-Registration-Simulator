@@ -65,8 +65,7 @@ public class QueueController {
             @RequestParam(name = "lectureId") Long lectureId
     ) {
         Long userId = (Long) authentication.getPrincipal();
-
-        queueService.exit(userId, lectureId);
+		System.out.println("userId: " + userId + ", lectureId: " + lectureId);
 
         return ResponseHandler.ok("대기열에서 제외되었습니다.");
     }

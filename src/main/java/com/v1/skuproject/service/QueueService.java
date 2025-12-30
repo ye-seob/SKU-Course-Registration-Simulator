@@ -27,7 +27,7 @@ public class QueueService {
         int dummyNum = (int) (Math.random() * 201) + 100;
 
         for (int i = 0; i < dummyNum; i++) {
-            String dummyValue = "dummy" + i + ":" + i;
+            String dummyValue = "dummy" + ":" + (i+"dummy");
             redisTemplate.opsForZSet().add(QUEUE_KEY, dummyValue, (double) (now - (i * 100L)));
         }
 
@@ -45,7 +45,7 @@ public class QueueService {
         long now = System.currentTimeMillis();
 
         for (int i = 0; i < dummyNum; i++) {
-            String dummyValue = "dummy" + i + ":" + i;
+            String dummyValue = "dummy" + ":" + ("dummy" + i);
             redisTemplate.opsForZSet().add(QUEUE_KEY, dummyValue, (double) now + (i * 10L));
         }
 
@@ -72,7 +72,7 @@ public class QueueService {
     }
 
 
-    /** 대기열 취소(새로고침 또는 창 닫기) */
+    /** 대기열 취소 (새로고침 / 창 닫기) */
     public void exit(Long userId, Long lectureId) {
         String value = generateValue(userId, lectureId);
 
