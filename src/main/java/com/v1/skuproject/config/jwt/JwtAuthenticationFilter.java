@@ -27,6 +27,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain chain)
             throws ServletException, IOException {
+        if (request.getRequestURI().startsWith("/ws")) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         // Authorization 헤더에서 Bearer 토큰 추출
         String token = resolveToken(request);

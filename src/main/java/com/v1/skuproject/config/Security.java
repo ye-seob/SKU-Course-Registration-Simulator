@@ -43,8 +43,12 @@ public class Security {
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/signup",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
-
+                                "/ws/**",
+                                "/v3/api-docs/**",
+				                "/app/**",
+				                "/user/**",
+                                "/topic/**",
+                                "/queue/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
