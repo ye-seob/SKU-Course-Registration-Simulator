@@ -44,7 +44,7 @@ public class EnrollmentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
-        Lecture lecture = lectureRepository.findById(lectureId)
+        Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
                 .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
 
         // 중복 신청

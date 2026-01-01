@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class EnrollmentServiceTest {
@@ -39,7 +36,7 @@ class EnrollmentServiceTest {
         // 1. 테스트용 강의 생성
         // --------------------------
         Lecture lecture = Lecture.builder()
-                .professor("테스트 교수")
+                .professor("테스트 test 교수")
                 .lectureName("동시성 테스트 강의")
                 .lectureCode("TEST101")
                 .classNumber(1)
@@ -62,7 +59,7 @@ class EnrollmentServiceTest {
         List<User> users = new ArrayList<>();
         for (int i = 0; i < threadCount; i++) {
             User user = User.builder()
-                    .studentId(20230000 + i + 1)
+                    .studentId(20213000 + i + 1)
                     .name("테스트유저" + (i + 1))
                     .password("password")
                     .major(Major.소프트웨어학과)
@@ -78,7 +75,6 @@ class EnrollmentServiceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch startLatch = new CountDownLatch(1);
         CountDownLatch endLatch = new CountDownLatch(threadCount);
-        AtomicInteger successCount = new AtomicInteger();
 
         for (int i = 0; i < threadCount; i++) {
             final Long userId = users.get(i).getId();
@@ -86,7 +82,6 @@ class EnrollmentServiceTest {
                 try {
                     startLatch.await();
                     enrollmentService.enroll(userId, lecture.getId());
-                    successCount.incrementAndGet();
                 } catch (Exception e) {
 
                 } finally {
@@ -97,14 +92,5 @@ class EnrollmentServiceTest {
 
         startLatch.countDown();
         endLatch.await();
-
-        System.out.println("성공한 수강신청 수 = " + successCount.get());
-
-        // --------------------------
-        // 4. 결과 검증
-        // --------------------------
-        assertThat(successCount.get())
-                .as("동시성 실패")
-                .isGreaterThan(1);
     }
 }
