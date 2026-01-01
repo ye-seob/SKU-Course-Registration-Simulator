@@ -8,10 +8,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 
 
@@ -73,16 +76,13 @@ public class JwtProvider {
         }
     }
 
-    public int getUserStudentId(String token) {
-        try {
-            Claims body = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return body.get("studentId", Integer.class);
-        } catch (JwtException e) {
-            throw new BaseException(ErrorCode.TOKEN_INVALID);
-        }
+    public Authentication getAuthentication(String token) {
+        // 토큰에서 userId 추출
+        Long userId = getUserId(token);
+
+        // HTTP Filter와 동일하게 Principal에 userId(Long)를 넣음
+        // 권한(Role)이 필요하다면 List.of() 대신 실제 권한 리스트 주입 필요
+        return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
     }
+
 }
