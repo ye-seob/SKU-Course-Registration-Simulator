@@ -79,4 +79,8 @@ public class Lecture {
             this.enrollment -= 1;
         }
     }
+
+    public void resetEnrolledCount() {
+        this.enrollment = 0;
+    }
 }
