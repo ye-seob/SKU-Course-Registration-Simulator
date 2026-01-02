@@ -91,6 +91,25 @@ public class EnrollmentService {
     }
 
     @Transactional
+    public void enrollDummy(Long lectureId) {
+
+        if (!enrollmentOpen) {
+            return;
+        }
+
+        Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
+                .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
+
+        if (lecture.getEnrollment() >= lecture.getCapacity()) {
+            return;
+        }
+
+        lecture.incrementEnrollment();
+        lectureRepository.save(lecture);
+
+    }
+
+    @Transactional
     public EnrollmentResponse cancelEnrollment(Long userId, Long lectureId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
