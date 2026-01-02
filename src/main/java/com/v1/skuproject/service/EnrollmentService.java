@@ -27,6 +27,9 @@ public class EnrollmentService {
     private final LectureRepository lectureRepository;
     private final UserRepository userRepository;
 
+    // 수강신청 가능 여부 플래그
+    private volatile boolean enrollmentOpen = false;
+
     @Transactional(readOnly = true)
     public List<EnrollmentResponse> getEnrollments(Long userId) {
         User user = userRepository.findById(userId)
@@ -41,7 +44,14 @@ public class EnrollmentService {
     @Transactional
     public EnrollmentResponse enroll(Long userId, Long lectureId) {
 
-        User user = userRepository.findById(userId)
+            // 수강신청 가능 여부 확인
+            if (!enrollmentOpen) {
+                log.info("수강신청 실패(CLOSED) userId={}, lectureId={}", userId, lectureId);
+                return EnrollmentResponse.fail("수강신청 마감");
+            }
+
+
+            User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
@@ -102,4 +112,34 @@ public class EnrollmentService {
         log.info("수강신청 취소 userId={}, lectureId={}", userId, lectureId);
         return EnrollmentResponse.from(enrollment);
     }
+
+    // 00분 - 수강신청 오픈
+    public void openEnrollment() {
+        enrollmentOpen = true;
+        log.info("수강신청 오픈");
+    }
+
+    // 50분 - 수강신청 마감
+    public void closeEnrollment() {
+        enrollmentOpen = false;
+        log.info("수강신청 마감");
+    }
+
+
+    // 55분 - 신청 내역 초기화
+    @Transactional
+    public void resetEnrollmentStatuses() {
+        log.info("신청 내역 초기화 시작");
+        enrollmentRepository.deleteAllInBatch(); // 기존 신청 내역 삭제
+        log.info("신청 내역 초기화 완료");
+    }
+
+    // 55분 - 강의별 신청 인원 초기화
+    @Transactional
+    public void resetLectureCounts() {
+        log.info("강의 신청 인원 초기화 시작");
+        lectureRepository.findAll().forEach(Lecture::resetEnrolledCount);
+        log.info("강의 신청 인원 초기화 완료");
+    }
+
 }

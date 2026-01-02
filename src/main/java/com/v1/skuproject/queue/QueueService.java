@@ -189,4 +189,12 @@ public class QueueService {
             }
         }
     }
+
+    // 55분 - 대기열 초기화
+    public void clearAllQueues() {
+        log.info("대기열 초기화 시작");
+        redisTemplate.delete(QUEUE_KEY);
+        log.info("대기열 초기화 완료");
+    }
+
 }
