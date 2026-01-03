@@ -5,7 +5,6 @@ import com.v1.skuproject.service.EnrollmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,27 +35,35 @@ public class QueueScheduler {
         // 한 번에 처리할 신청자 수 결정 (랜덤 10~50)
         int processCount = ThreadLocalRandom.current().nextInt(10, 50);
 
-        // Redis ZSet에서 score 기준으로 가장 낮은 값부터 꺼냄
-        Set<ZSetOperations.TypedTuple<String>> poppedValues =
-                redisTemplate.opsForZSet().popMin("enrollment:queue", processCount);
+        Set<String> values =
+                redisTemplate.opsForZSet()
+                        .range("enrollment:queue", 0, processCount - 1);
 
         // 처리할 값이 없으면 바로 종료
-        if (poppedValues == null || poppedValues.isEmpty()) {
+        if (values == null || values.isEmpty()) {
             return;
         }
 
-        for (ZSetOperations.TypedTuple<String> tuple : poppedValues) {
-            String value = tuple.getValue();
+        for (String value : values) {
             if (value == null) continue;
 
             // Redis에 저장된 값 형식: "userId:lectureId"
             String[] data = value.split(":");
 
-            // 더미 데이터는 건너뜀
-            if ("dummy".equals(data[0])) continue;
 
             Long userId = Long.parseLong(data[0]);
             Long lectureId = Long.parseLong(data[1]);
+
+            // 더미 유저
+            if (userId >= 100_000L) {
+
+                enrollmentService.enrollDummy(lectureId);
+
+                // 더미 유저는 WS 알림 불필요
+                queueService.exit(userId, lectureId);
+
+                continue;
+            }
 
             try {
                 // 실제 수강신청 처리
