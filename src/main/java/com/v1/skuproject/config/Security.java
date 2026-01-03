@@ -48,7 +48,8 @@ public class Security {
 				                "/app/**",
 				                "/user/**",
                                 "/topic/**",
-                                "/queue/**"
+                                "/queue/**",
+                                "/api/v1/simulation/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
