@@ -2,6 +2,7 @@ package com.v1.skuproject.simulation;
 
 import com.v1.skuproject.queue.QueueService;
 import com.v1.skuproject.service.EnrollmentService;
+import com.v1.skuproject.util.LectureRankingService;
 import com.v1.skuproject.util.response.ApiResponse;
 import com.v1.skuproject.util.response.ResponseHandler;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class SimulationController {
     private final SimulationService simulationService;
     private final EnrollmentService enrollmentService;
     private final QueueService queueService;
+    private final LectureRankingService lectureRankingService;
 
     @PostMapping("/start")
     public ResponseEntity<ApiResponse<String>> startSimulation() {
@@ -58,6 +60,11 @@ public class SimulationController {
         enrollmentService.resetLectureCounts();
 
         log.info("수강신청 초기화 완료");
+    }
+
+    @PostMapping("rank")
+    public  void buildRanking(){
+        lectureRankingService.buildRanking();
     }
 
 }

@@ -2,6 +2,7 @@ package com.v1.skuproject.simulation;
 
 import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.repository.LectureRepository;
+import com.v1.skuproject.util.LectureRankingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -26,7 +27,7 @@ public class SimulationService {
 
     private final LectureRepository lectureRepository;
     private final StringRedisTemplate redisTemplate;
-
+    private final LectureRankingService lectureRankingService;
 
     private final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(10);
@@ -148,21 +149,10 @@ public class SimulationService {
         for (int i = 0; i < count; i++) {
             long userId = userIdSeq.incrementAndGet();
 
-            Lecture lecture =
-                    lectures.get((int) (userId % lectures.size()));
 
+            Lecture lecture = lectureRankingService.pickLecture();
 
-            if (ThreadLocalRandom.current().nextInt(10) < 3) {
-                lecture =
-                        lectures.get(
-                                ThreadLocalRandom.current()
-                                        .nextInt(lectures.size())
-                        );
-            }
-
-            users.add(
-                    DummyUser.create(userId, lecture.getId())
-            );
+            users.add(DummyUser.create(userId, lecture.getId()));
         }
 
         /**
