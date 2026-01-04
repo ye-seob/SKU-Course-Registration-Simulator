@@ -67,19 +67,6 @@ public class QueueService {
         String value = generateValue(userId, lectureId);
         long now = System.currentTimeMillis();
 
-        // 더미 데이터 삽입 (테스트용)
-        int dummyNum = (int) (Math.random() * 201) + 100;
-        for (int i = 0; i < dummyNum; i++) {
-            String dummyValue = "dummy:" + i;
-            redisTemplate.opsForZSet()
-                    .add(QUEUE_KEY, dummyValue, (double) (now - (i * 100L)));
-        }
-        for (int i = 9999; i < dummyNum+9999; i++) {
-            String dummyValue = "dummy:" + i;
-            redisTemplate.opsForZSet()
-                    .add(QUEUE_KEY, dummyValue, (double) (now + (i * 100L)));
-        }
-
         // 실제 사용자 대기열 등록
         redisTemplate.opsForZSet()
                 .add(QUEUE_KEY, value, (double) now);

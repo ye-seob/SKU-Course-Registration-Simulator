@@ -16,18 +16,23 @@ public class EnrollmentScheduler {
 
     private final EnrollmentService enrollmentService;
     private final QueueService queueService;
+    private final LectureRankingService lectureRankingService;
 
     // 00분 - 수강신청 오픈
     @Scheduled(cron = "0 0 * * * *")
     public void openEnrollment() {
+
         log.info("수강신청 오픈");
+
         enrollmentService.openEnrollment(); // 상태 플래그 ON
     }
 
     // 50분 - 신청 마감
     @Scheduled(cron = "0 50 * * * *")
     public void closeEnrollment() {
+
         log.info("수강신청 마감");
+
         enrollmentService.closeEnrollment(); // 상태 플래그 OFF
     }
 
@@ -39,6 +44,9 @@ public class EnrollmentScheduler {
         enrollmentService.resetEnrollmentStatuses(); // 신청 내역 초기화
         queueService.clearAllQueues();               // 대기열 초기화
         enrollmentService.resetLectureCounts();      // 신청 인원 초기화
+
+        // rating + 타입 기준으로 순위 생성
+        lectureRankingService.buildRanking();
 
         log.info("수강신청 초기화 완료");
     }
