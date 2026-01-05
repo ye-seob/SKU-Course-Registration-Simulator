@@ -73,6 +73,12 @@ public class EnrollmentService {
         // 이미 신청한 강의 목록 조회
         List<Enrollment> userEnrollments = enrollmentRepository.findAllByUserAndStatus(user, EnrollmentStatus.SUCCESS);
 
+        // 최대 수강 제한 체크
+        int MAX_COURSES = 10;
+        if (userEnrollments.size() >= MAX_COURSES) {
+            log.info("수강신청 실패(MAX_LIMIT) userId={}, lectureId={}", userId, lectureId);
+            return EnrollmentResponse.fail("최대 10개의 강의까지 신청 가능합니다");
+        }
 
         for (Enrollment e : userEnrollments) {
             if (ScheduleUtil.hasConflict(lecture.getSchedule(), e.getLecture().getSchedule())) {
