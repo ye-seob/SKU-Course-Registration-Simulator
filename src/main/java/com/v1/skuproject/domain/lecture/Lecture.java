@@ -59,9 +59,9 @@ public class Lecture {
     @Column(nullable = true)
     private String gradingMethod;
 
-    // 단순 문자열, 필요 시 JSON 또는 별도 테이블로 확장 가능
-    @Column(nullable = false)
-    private String schedule;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String schedule; // {"월":["25","26"],"수":["21","22"],"목":["22","22"]}
 
     // 어떤 학과의 전공인지, 교양이라면 null
     @Column(nullable = true)

@@ -8,6 +8,7 @@ import com.v1.skuproject.dto.enrollment.EnrollmentResponse;
 import com.v1.skuproject.repository.EnrollmentRepository;
 import com.v1.skuproject.repository.LectureRepository;
 import com.v1.skuproject.repository.UserRepository;
+import com.v1.skuproject.util.ScheduleUtil;
 import com.v1.skuproject.util.exception.BaseException;
 import com.v1.skuproject.util.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -44,14 +45,14 @@ public class EnrollmentService {
     @Transactional
     public EnrollmentResponse enroll(Long userId, Long lectureId) {
 
-            // 수강신청 가능 여부 확인
-            if (!enrollmentOpen) {
-                log.info("수강신청 실패(CLOSED) userId={}, lectureId={}", userId, lectureId);
-                return EnrollmentResponse.fail("수강신청 마감");
-            }
+        // 수강신청 가능 여부 확인
+        if (!enrollmentOpen) {
+            log.info("수강신청 실패(CLOSED) userId={}, lectureId={}", userId, lectureId);
+            return EnrollmentResponse.fail("수강신청 마감");
+        }
 
 
-            User user = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
@@ -69,6 +70,16 @@ public class EnrollmentService {
             return EnrollmentResponse.fail("정원 초과");
         }
 
+        // 이미 신청한 강의 목록 조회
+        List<Enrollment> userEnrollments = enrollmentRepository.findAllByUserAndStatus(user, EnrollmentStatus.SUCCESS);
+
+
+        for (Enrollment e : userEnrollments) {
+            if (ScheduleUtil.hasConflict(lecture.getSchedule(), e.getLecture().getSchedule())) {
+                log.info("수강신청 실패(TIME_CONFLICT) userId={}, lectureId={}", userId, lectureId);
+                return EnrollmentResponse.fail("시간 겹침");
+            }
+        }
 
 
         // 성공
@@ -123,7 +134,7 @@ public class EnrollmentService {
 
 
 
-       enrollmentRepository.delete(enrollment);
+        enrollmentRepository.delete(enrollment);
 
         lecture.decrementEnrollment();
         lectureRepository.save(lecture);
