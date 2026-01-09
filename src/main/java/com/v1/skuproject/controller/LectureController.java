@@ -11,10 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,4 +41,23 @@ public class LectureController {
 
         return ResponseHandler.ok(lectures);
     }
+
+    @Operation(
+            summary = "강의 평점 등록 / 수정",
+            description = "사용자가 강의에 평점을 등록하거나 수정합니다."
+    )
+    @PostMapping("/{lectureId}/rating")
+    public ResponseEntity<ApiResponse<String>> rateLecture(
+            Authentication authentication,
+            @PathVariable(name = "lectureId") Long lectureId,
+            @RequestParam(name = "score") int score
+
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        lectureService.rateLecture(userId,lectureId, score);
+
+        return ResponseHandler.ok("강의 평점이 등록되었습니다.");
+    }
+
 }
