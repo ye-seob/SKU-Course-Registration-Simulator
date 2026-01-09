@@ -4,6 +4,9 @@ import com.v1.skuproject.domain.user.Major;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "lectures")
 @Getter
@@ -42,7 +45,7 @@ public class Lecture {
 
     // 몇시간 강의인지
     @Column(nullable = false)
-    private  double time;
+    private double time;
 
     // 정원
     @Column(nullable = false)
@@ -52,21 +55,29 @@ public class Lecture {
     @Column(nullable = false)
     private Integer enrollment;
 
-    // 평점
+    // 강의 평점
     @Column(nullable = false)
     private double rating;
 
-    @Column(nullable = true)
+    // 평점 개수
+    @Column(name = "rating_count", nullable = false)
+    private int ratingCount;
+
+    @Column(name = "grading_method",nullable = true)
     private String gradingMethod;
 
-
+    // {"월":["25","26"],"수":["21","22"],"목":["22","22"]}
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String schedule; // {"월":["25","26"],"수":["21","22"],"목":["22","22"]}
+    private String schedule;
 
     // 어떤 학과의 전공인지, 교양이라면 null
-    @Column(nullable = true)
     @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
     private Major major;
+
+    @OneToMany(mappedBy = "lecture", cascade = CascadeType.PERSIST)
+    private List<LectureRating> ratings = new ArrayList<>();
+
 
     public void incrementEnrollment() {
         if (this.enrollment < this.capacity) {
@@ -83,4 +94,27 @@ public class Lecture {
     public void resetEnrolledCount() {
         this.enrollment = 0;
     }
+
+
+    public LectureRating findRatingByUserId(Long userId) {
+        return ratings.stream()
+                .filter(r -> r.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // 평점 추가
+    public void addRating(int score) {
+        double totalScore = this.rating * this.ratingCount;
+        this.ratingCount += 1;
+        this.rating = (totalScore + score) / this.ratingCount;
+    }
+
+    // 기존 평점 수정
+    public void updateRating(int oldScore, int newScore) {
+        double totalScore = this.rating * this.ratingCount;
+        this.rating = (totalScore - oldScore + newScore) / this.ratingCount;
+    }
+
+
 }
