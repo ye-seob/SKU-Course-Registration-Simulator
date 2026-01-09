@@ -1,6 +1,7 @@
 package com.v1.skuproject.service;
 
 import com.v1.skuproject.domain.lecture.Lecture;
+import com.v1.skuproject.domain.lecture.LectureRating;
 import com.v1.skuproject.domain.lecture.LectureType;
 import com.v1.skuproject.domain.user.Major;
 import com.v1.skuproject.repository.LectureRepository;
@@ -68,5 +69,29 @@ public class LectureService {
                 .collect(Collectors.toList());
 
         return result;
+    }
+
+    @Transactional
+    public void rateLecture(Long userId, Long lectureId, int score) {
+
+        if (score < 1 || score > 5) {
+            throw new IllegalArgumentException("평점은 1에서 5 사이여야 합니다.");
+        }
+
+        Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("강의가 존재하지 않습니다."));
+
+        // 등록한 평점이 있는지 확인
+        LectureRating existingRating = lecture.findRatingByUserId(userId);
+
+        // 있으면 업데이트
+        if (existingRating != null) {
+            int oldScore = existingRating.getScore();
+            existingRating.updateScore(score);
+            lecture.updateRating(oldScore, score);
+        } else {  // 없으면 새로 생성
+            lecture.getRatings().add(new LectureRating(lecture, userId, score));
+            lecture.addRating(score);
+        }
     }
 }
