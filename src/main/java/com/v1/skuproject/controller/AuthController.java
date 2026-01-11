@@ -1,11 +1,11 @@
 package com.v1.skuproject.controller;
 
+import com.v1.skuproject.common.response.ApiResponse;
+import com.v1.skuproject.common.response.ResponseHandler;
 import com.v1.skuproject.dto.user.UserRequest.Login;
 import com.v1.skuproject.dto.user.UserRequest.SignUp;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.service.UserService;
-import com.v1.skuproject.util.response.ApiResponse;
-import com.v1.skuproject.util.response.ResponseHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
