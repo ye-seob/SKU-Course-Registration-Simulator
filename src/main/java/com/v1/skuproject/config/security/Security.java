@@ -1,4 +1,4 @@
-package com.v1.skuproject.config;
+package com.v1.skuproject.config.security;
 
 import com.v1.skuproject.config.jwt.JwtAuthenticationFilter;
 import com.v1.skuproject.config.jwt.JwtProvider;

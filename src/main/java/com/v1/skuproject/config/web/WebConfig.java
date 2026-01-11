@@ -1,4 +1,4 @@
-package com.v1.skuproject.config;
+package com.v1.skuproject.config.web;
 
 import com.v1.skuproject.util.traceId.TraceIdFilter;
 import jakarta.servlet.Filter;
