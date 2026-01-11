@@ -1,12 +1,12 @@
 package com.v1.skuproject.service;
 
+import com.v1.skuproject.common.exception.BaseException;
+import com.v1.skuproject.common.exception.ErrorCode;
 import com.v1.skuproject.config.jwt.JwtProvider;
 import com.v1.skuproject.domain.user.User;
 import com.v1.skuproject.dto.user.UserRequest;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.repository.UserRepository;
-import com.v1.skuproject.util.exception.BaseException;
-import com.v1.skuproject.util.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +25,6 @@ public class UserService {
     public Long createUser(UserRequest.SignUp request){
 
         if(userRepository.existsByStudentId(request.getStudentId())){
-
             throw new BaseException(ErrorCode.USER_ALREADY_EXISTS);
         }
 

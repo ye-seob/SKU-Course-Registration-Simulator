@@ -1,5 +1,7 @@
 package com.v1.skuproject.service;
 
+import com.v1.skuproject.common.exception.BaseException;
+import com.v1.skuproject.common.exception.ErrorCode;
 import com.v1.skuproject.domain.enrollment.Enrollment;
 import com.v1.skuproject.domain.enrollment.EnrollmentStatus;
 import com.v1.skuproject.domain.lecture.Lecture;
@@ -10,8 +12,6 @@ import com.v1.skuproject.repository.LectureRepository;
 import com.v1.skuproject.repository.UserRepository;
 import com.v1.skuproject.util.ScheduleUtil;
 import com.v1.skuproject.util.TimeChecker;
-import com.v1.skuproject.util.exception.BaseException;
-import com.v1.skuproject.util.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class EnrollmentService {
 
@@ -30,8 +29,12 @@ public class EnrollmentService {
     private final UserRepository userRepository;
     private final TimeChecker timeChecker;
 
+    /**
+     * 사용자의 수강 신청 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<EnrollmentResponse> getEnrollments(Long userId) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
@@ -41,11 +44,19 @@ public class EnrollmentService {
                 .toList();
     }
 
+    /**
+     * 수강 신청
+     */
     @Transactional
     public EnrollmentResponse enroll(Long userId, Long lectureId) {
 
-        timeChecker.validate();
-
+        // 수강신청 가능 시간 검증
+        try {
+            timeChecker.validate();
+        } catch (Exception e) {
+            log.warn("수강신청 시간 오류 userId={} lectureId={}", userId, lectureId);
+            throw new BaseException(ErrorCode.ENROLLMENT_TIME_INVALID);
+        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
@@ -53,55 +64,62 @@ public class EnrollmentService {
         Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
                 .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
 
-        // 중복 신청
+        // 중복 신청 체크
         if (enrollmentRepository.findByUser_IdAndLecture_Id(userId, lectureId).isPresent()) {
-            log.info("수강신청 실패(DUPLICATE) userId={}, lectureId={}", userId, lectureId);
-            return EnrollmentResponse.fail("중복 신청");
+            log.info("수강신청 실패(DUPLICATE) userId={} lectureId={}", userId, lectureId);
+            throw new BaseException(ErrorCode.ENROLLMENT_DUPLICATE);
         }
 
-        // 정원 초과
+        // 정원 초과 체크
         if (lecture.getEnrollment() >= lecture.getCapacity()) {
-            log.info("수강신청 실패(CAPACITY_EXCEEDED) userId={}, lectureId={}", userId, lectureId);
-            return EnrollmentResponse.fail("정원 초과");
+            log.info("수강신청 실패(CAPACITY_EXCEEDED) userId={} lectureId={}", userId, lectureId);
+            throw new BaseException(ErrorCode.ENROLLMENT_CAPACITY_EXCEEDED);
         }
 
-        // 이미 신청한 강의 목록 조회
-        List<Enrollment> userEnrollments = enrollmentRepository.findAllByUserAndStatus(user, EnrollmentStatus.SUCCESS);
+        // 이미 신청한 강의 목록
+        List<Enrollment> userEnrollments =
+                enrollmentRepository.findAllByUserAndStatus(user, EnrollmentStatus.SUCCESS);
 
-        // 최대 수강 제한 체크
+        // 최대 수강 제한
         int MAX_COURSES = 10;
         if (userEnrollments.size() >= MAX_COURSES) {
-            log.info("수강신청 실패(MAX_LIMIT) userId={}, lectureId={}", userId, lectureId);
-            return EnrollmentResponse.fail("최대 10개의 강의까지 신청 가능합니다");
+            log.info("수강신청 실패(MAX_LIMIT) userId={} lectureId={}", userId, lectureId);
+            throw new BaseException(ErrorCode.ENROLLMENT_MAX_LIMIT_EXCEEDED);
         }
 
+        // 시간표 겹침 체크
         for (Enrollment e : userEnrollments) {
-            if (ScheduleUtil.hasConflict(lecture.getSchedule(), e.getLecture().getSchedule())) {
-                log.info("수강신청 실패(TIME_CONFLICT) userId={}, lectureId={}", userId, lectureId);
-                return EnrollmentResponse.fail("시간 겹침");
+            if (ScheduleUtil.hasConflict(
+                    lecture.getSchedule(),
+                    e.getLecture().getSchedule())
+            ) {
+                log.info("수강신청 실패(TIME_CONFLICT) userId={} lectureId={}", userId, lectureId);
+                throw new BaseException(ErrorCode.ENROLLMENT_TIME_CONFLICT);
             }
         }
 
-
-        // 성공
-        Enrollment success = enrollmentRepository.save(
+        // 수강신청 성공 처리
+        Enrollment enrollment = enrollmentRepository.save(
                 Enrollment.success(user, lecture)
         );
 
         lecture.incrementEnrollment();
-
         lectureRepository.save(lecture);
 
-        log.info("수강신청 성공 userId={}, lectureId={}, enrollment={}/{}",
+        log.info(
+                "수강신청 성공 userId={} lectureId={} enrollment={}/{}",
                 userId,
                 lectureId,
                 lecture.getEnrollment(),
                 lecture.getCapacity()
         );
 
-        return EnrollmentResponse.from(success);
+        return EnrollmentResponse.from(enrollment);
     }
 
+    /**
+     * 더미 유저 수강신청 처리 (큐용)
+     */
     @Transactional
     public void enrollDummy(Long lectureId) {
 
@@ -116,48 +134,51 @@ public class EnrollmentService {
 
         lecture.incrementEnrollment();
         lectureRepository.save(lecture);
-
     }
 
+    /**
+     * 수강 신청 취소
+     */
     @Transactional
     public EnrollmentResponse cancelEnrollment(Long userId, Long lectureId) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
 
-
-        Enrollment enrollment = enrollmentRepository.findByUser_IdAndLecture_Id(userId,lectureId)
+        Enrollment enrollment = enrollmentRepository
+                .findByUser_IdAndLecture_Id(userId, lectureId)
                 .orElseThrow(() -> new BaseException(ErrorCode.ENROLLMENT_NOT_FOUND));
-
-
 
         enrollmentRepository.delete(enrollment);
 
         lecture.decrementEnrollment();
         lectureRepository.save(lecture);
 
-        log.info("수강신청 취소 userId={}, lectureId={}", userId, lectureId);
+        log.info("수강신청 취소 userId={} lectureId={}", userId, lectureId);
+
         return EnrollmentResponse.from(enrollment);
     }
 
-
-
-    // 55분 - 신청 내역 초기화
+    /**
+     * 55분 - 신청 내역 초기화
+     */
     @Transactional
     public void resetEnrollmentStatuses() {
         log.info("신청 내역 초기화 시작");
-        enrollmentRepository.deleteAllInBatch(); // 기존 신청 내역 삭제
+        enrollmentRepository.deleteAllInBatch();
         log.info("신청 내역 초기화 완료");
     }
 
-    // 55분 - 강의별 신청 인원 초기화
+    /**
+     * 55분 - 강의별 신청 인원 초기화
+     */
     @Transactional
     public void resetLectureCounts() {
         log.info("강의 신청 인원 초기화 시작");
         lectureRepository.findAll().forEach(Lecture::resetEnrolledCount);
         log.info("강의 신청 인원 초기화 완료");
     }
-
 }

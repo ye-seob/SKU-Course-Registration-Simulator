@@ -1,4 +1,4 @@
-package com.v1.skuproject.util;
+package com.v1.skuproject.service;
 
 import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.domain.lecture.LectureType;
