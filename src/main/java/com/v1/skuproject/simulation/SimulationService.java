@@ -2,7 +2,7 @@ package com.v1.skuproject.simulation;
 
 import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.repository.LectureRepository;
-import com.v1.skuproject.util.LectureRankingService;
+import com.v1.skuproject.service.LectureRankingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;

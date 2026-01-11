@@ -1,7 +1,8 @@
-package com.v1.skuproject.util;
+package com.v1.skuproject.simulation;
 
 import com.v1.skuproject.queue.QueueService;
 import com.v1.skuproject.service.EnrollmentService;
+import com.v1.skuproject.service.LectureRankingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -17,8 +18,6 @@ public class EnrollmentScheduler {
     private final EnrollmentService enrollmentService;
     private final QueueService queueService;
     private final LectureRankingService lectureRankingService;
-
-
 
     // 55분 - 초기화
     @Scheduled(cron = "0 55 * * * *")
