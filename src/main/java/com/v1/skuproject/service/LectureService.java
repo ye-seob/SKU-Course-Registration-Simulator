@@ -69,6 +69,7 @@ public class LectureService {
                         .gradingMethod(l.getGradingMethod())
                         .lectureCode(l.getLectureCode())
                         .type(l.getType())
+                        .room(l.getRoom())
                         .build())
                 .collect(Collectors.toList());
     }
