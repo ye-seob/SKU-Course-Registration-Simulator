@@ -1,4 +1,4 @@
-package com.v1.skuproject.config;
+package com.v1.skuproject.config.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

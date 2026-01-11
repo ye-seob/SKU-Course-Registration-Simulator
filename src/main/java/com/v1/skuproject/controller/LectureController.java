@@ -1,11 +1,11 @@
 package com.v1.skuproject.controller;
 
+import com.v1.skuproject.common.response.ApiResponse;
+import com.v1.skuproject.common.response.ResponseHandler;
 import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.domain.lecture.LectureType;
 import com.v1.skuproject.domain.user.Major;
 import com.v1.skuproject.service.LectureService;
-import com.v1.skuproject.util.response.ApiResponse;
-import com.v1.skuproject.util.response.ResponseHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +35,12 @@ public class LectureController {
             @RequestParam(name = "type", required = false) LectureType type,
             @RequestParam(name = "keyword", required = false) String keyword
     ) {
+        log.info(
+                "강의 조회 요청 major={} type={} keyword={}",
+                major, type, keyword
+        );
 
         List<Lecture> lectures = lectureService.searchLectures(major, type, keyword);
-
 
         return ResponseHandler.ok(lectures);
     }
@@ -51,13 +54,21 @@ public class LectureController {
             Authentication authentication,
             @PathVariable(name = "lectureId") Long lectureId,
             @RequestParam(name = "score") int score
-
     ) {
         Long userId = (Long) authentication.getPrincipal();
 
-        lectureService.rateLecture(userId,lectureId, score);
+        log.info(
+                "강의 평점 등록 요청 userId={} lectureId={} score={}",
+                userId, lectureId, score
+        );
+
+        lectureService.rateLecture(userId, lectureId, score);
+
+        log.info(
+                "강의 평점 등록 성공 userId={} lectureId={}",
+                userId, lectureId
+        );
 
         return ResponseHandler.ok("강의 평점이 등록되었습니다.");
     }
-
 }

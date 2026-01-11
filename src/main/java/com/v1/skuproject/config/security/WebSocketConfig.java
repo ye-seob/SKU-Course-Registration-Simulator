@@ -1,4 +1,4 @@
-package com.v1.skuproject.config;
+package com.v1.skuproject.config.security;
 
 import com.v1.skuproject.config.jwt.StompJwtChannelInterceptor;
 import org.springframework.context.annotation.Configuration;

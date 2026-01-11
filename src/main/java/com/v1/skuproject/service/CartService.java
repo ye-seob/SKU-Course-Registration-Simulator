@@ -1,5 +1,7 @@
 package com.v1.skuproject.service;
 
+import com.v1.skuproject.common.exception.BaseException;
+import com.v1.skuproject.common.exception.ErrorCode;
 import com.v1.skuproject.domain.cart.Cart;
 import com.v1.skuproject.domain.cart.CartLecture;
 import com.v1.skuproject.domain.cart.CartLectureId;
@@ -9,8 +11,6 @@ import com.v1.skuproject.repository.CartLectureRepository;
 import com.v1.skuproject.repository.CartRepository;
 import com.v1.skuproject.repository.LectureRepository;
 import com.v1.skuproject.repository.UserRepository;
-import com.v1.skuproject.util.exception.BaseException;
-import com.v1.skuproject.util.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,10 +26,13 @@ import java.util.Optional;
 public class CartService {
 
     private final UserRepository userRepository;
-    private final LectureRepository lectureRepository; // Lecture 객체 조회를 위해 필요
+    private final LectureRepository lectureRepository;
     private final CartRepository cartRepository;
     private final CartLectureRepository cartLectureRepository;
 
+    /**
+     * 장바구니에 강의 추가
+     */
     @Transactional
     public CartLecture addLectureToCart(Long userId, Long lectureId) {
 
@@ -39,24 +42,25 @@ public class CartService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
 
-        // 2. 장바구니(Cart) 조회 또는 생성 (User당 1개)
         Cart cart = cartRepository.findByUser(user)
                 .orElseGet(() -> {
-                    Cart newCart = Cart.builder().user(user).build();
+                    Cart newCart = Cart.builder()
+                            .user(user)
+                            .build();
+                    cartRepository.save(newCart);
 
-                    return cartRepository.save(newCart);
+                    log.info("장바구니 신규 생성 userId={}", userId);
+                    return newCart;
                 });
 
-
-        Optional<CartLecture> existingCartLecture = cartLectureRepository.findByCartAndLecture(cart, lecture);
-
-        if (existingCartLecture.isPresent()) {
-            throw new BaseException(ErrorCode.INVALID_REQUEST);
+        // 이미 담긴 강의인지 확인
+        if (cartLectureRepository.findByCartAndLecture(cart, lecture).isPresent()) {
+            log.warn("장바구니 중복 추가 시도 userId={} lectureId={}", userId, lectureId);
+            throw new BaseException(ErrorCode.CART_LECTURE_ALREADY_EXISTS);
         }
 
-
-
         CartLectureId id = new CartLectureId(cart.getId(), lecture.getId());
+
         CartLecture cartLecture = CartLecture.builder()
                 .id(id)
                 .cart(cart)
@@ -64,12 +68,19 @@ public class CartService {
                 .addedAt(LocalDateTime.now())
                 .build();
 
-        return cartLectureRepository.save(cartLecture);
+        CartLecture saved = cartLectureRepository.save(cartLecture);
+
+        log.info("장바구니 강의 추가 성공 userId={} lectureId={}", userId, lectureId);
+
+        return saved;
     }
 
-
+    /**
+     * 장바구니에서 강의 제거
+     */
     @Transactional
     public void removeLectureFromCart(Long userId, Long lectureId) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
@@ -78,14 +89,24 @@ public class CartService {
 
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> {
-                    throw new BaseException(ErrorCode.INVALID_REQUEST);
+                    log.warn("장바구니 삭제 시도 - 장바구니 없음 userId={}", userId);
+                    return new BaseException(ErrorCode.CART_NOT_FOUND);
                 });
 
+        boolean exists = cartLectureRepository.findByCartAndLecture(cart, lecture).isPresent();
+        if (!exists) {
+            log.warn("장바구니 강의 삭제 실패 - 강의 없음 userId={} lectureId={}", userId, lectureId);
+            throw new BaseException(ErrorCode.CART_LECTURE_NOT_FOUND);
+        }
 
         cartLectureRepository.deleteByCartAndLecture(cart, lecture);
+
+        log.info("장바구니 강의 삭제 성공 userId={} lectureId={}", userId, lectureId);
     }
 
-
+    /**
+     * 장바구니 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<CartLecture> getCartLectures(Long userId) {
 
@@ -94,13 +115,16 @@ public class CartService {
 
         Optional<Cart> cartOptional = cartRepository.findByUser(user);
 
+        // 장바구니가 없으면 정상 케이스로 빈 리스트 반환
         if (cartOptional.isEmpty()) {
+            log.info("장바구니 조회 - 비어있음 userId={}", userId);
             return List.of();
         }
 
-        Cart cart = cartOptional.get();
-        
-        List<CartLecture> cartLectures = cartLectureRepository.findByCart(cart);
+        List<CartLecture> cartLectures =
+                cartLectureRepository.findByCart(cartOptional.get());
+
+        log.info("장바구니 조회 userId={} count={}", userId, cartLectures.size());
 
         return cartLectures;
     }

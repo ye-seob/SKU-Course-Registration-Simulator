@@ -1,9 +1,9 @@
 package com.v1.skuproject.controller;
 
+import com.v1.skuproject.common.response.ApiResponse;
+import com.v1.skuproject.common.response.ResponseHandler;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.service.UserService;
-import com.v1.skuproject.util.response.ApiResponse;
-import com.v1.skuproject.util.response.ResponseHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,23 +26,30 @@ public class UserController {
 
     @Operation(summary = "내 정보 조회")
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserDto>> getUser(Authentication authentication) {
-        // 인증 객체에서 현재 로그인한 사용자의 id를 가져옴
+    public ResponseEntity<ApiResponse<UserDto>> getUser(
+            Authentication authentication
+    ) {
         Long userId = (Long) authentication.getPrincipal();
+
+        log.info("내 정보 조회 요청 userId={}", userId);
 
         UserDto response = userService.getUserById(userId);
 
         return ResponseHandler.ok(response);
     }
 
-
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping("/me")
-    public ResponseEntity<ApiResponse<String>> deleteUser(Authentication authentication) {
-        // 인증 객체에서 현재 로그인한 사용자의 id를 가져옴
+    public ResponseEntity<ApiResponse<String>> deleteUser(
+            Authentication authentication
+    ) {
         Long userId = (Long) authentication.getPrincipal();
 
+        log.info("회원 탈퇴 요청 userId={}", userId);
+
         userService.deleteUserById(userId);
+
+        log.info("회원 탈퇴 성공 userId={}", userId);
 
         return ResponseHandler.ok("회원 탈퇴 성공");
     }

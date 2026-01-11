@@ -1,4 +1,4 @@
-package com.v1.skuproject.util.response;
+package com.v1.skuproject.common.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
