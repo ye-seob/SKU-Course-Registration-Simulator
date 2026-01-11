@@ -38,7 +38,7 @@ public class QueueService {
     private final Map<Long, Long> subscribers = new ConcurrentHashMap<>();
 
     /**
-     * 1초마다 모든 구독자에게 현재 대기열 순번을 Push
+     * 1초마다 모든 구독자에게 현재 대기열 순번 Push
      */
     @Scheduled(fixedDelay = 1000)
     public void pushQueueUpdate() {
@@ -54,8 +54,19 @@ public class QueueService {
                         "/queue-rank",
                         rank
                 );
+
+            } catch (IllegalStateException e) {
+                // 대기열 정보 불일치 등 문제
+                log.warn(
+                        "대기열 순번 조회 실패 userId={} lectureId={} 사유={}",
+                        userId, lectureId, e.getMessage()
+                );
             } catch (Exception e) {
-                log.error("대기열 업데이트 실패 - userId={}, lectureId={}", userId, lectureId, e);
+                // Redis / WS 등 시스템 문제
+                log.error(
+                        "대기열 순번 전송 중 시스템 오류 userId={} lectureId={}",
+                        userId, lectureId, e
+                );
             }
         }
     }
@@ -67,15 +78,24 @@ public class QueueService {
         String value = generateValue(userId, lectureId);
         long now = System.currentTimeMillis();
 
-        // 실제 사용자 대기열 등록
-        redisTemplate.opsForZSet()
-                .add(QUEUE_KEY, value, (double) now);
+        try {
+            redisTemplate.opsForZSet()
+                    .add(QUEUE_KEY, value, (double) now);
 
-        // 구독자 등록 (userId -> lectureId)
-        subscribers.put(userId, lectureId);
+            subscribers.put(userId, lectureId);
 
-        // 즉시 한 번 알림 전송
-        notifyQueueUpdate();
+            log.info("대기열 등록 userId={} lectureId={}", userId, lectureId);
+
+            // 즉시 한 번 알림 전송
+            notifyQueueUpdate();
+
+        } catch (Exception e) {
+            log.error(
+                    "대기열 등록 실패 userId={} lectureId={}",
+                    userId, lectureId, e
+            );
+            throw e;
+        }
     }
 
     /**
@@ -88,7 +108,7 @@ public class QueueService {
         Long totalSize = redisTemplate.opsForZSet().zCard(QUEUE_KEY);
 
         if (rank == null || totalSize == null) {
-            throw new RuntimeException("대기열 조회 실패");
+            throw new IllegalStateException("대기열 정보가 존재하지 않음");
         }
 
         Long aheadCount = rank;
@@ -106,19 +126,29 @@ public class QueueService {
     public void exit(Long userId, Long lectureId) {
         String value = generateValue(userId, lectureId);
 
-        redisTemplate.opsForZSet().remove(QUEUE_KEY, value);
-        subscribers.remove(userId);
+        try {
+            redisTemplate.opsForZSet().remove(QUEUE_KEY, value);
+            subscribers.remove(userId);
+
+            log.info("대기열 이탈 userId={} lectureId={}", userId, lectureId);
+
+        } catch (Exception e) {
+            log.error(
+                    "대기열 이탈 처리 실패 userId={} lectureId={}",
+                    userId, lectureId, e
+            );
+        }
     }
+
     /**
      * WebSocket 연결 종료 시 자동 호출
-     **/
+     */
     @EventListener
-    public void handleWebSocketDisconnect(SessionDisconnectEvent event){
+    public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor accessor =
                 StompHeaderAccessor.wrap(event.getMessage());
 
         Principal principal = accessor.getUser();
-
         if (principal == null) {
             return;
         }
@@ -127,7 +157,7 @@ public class QueueService {
         try {
             userId = Long.valueOf(principal.getName());
         } catch (NumberFormatException e) {
-            log.warn("WS disconnect - userId 파싱 실패: {}", principal.getName());
+            log.warn("WS 종료 - userId 파싱 실패 value={}", principal.getName());
             return;
         }
 
@@ -141,14 +171,14 @@ public class QueueService {
         redisTemplate.opsForZSet().remove(QUEUE_KEY, value);
         subscribers.remove(userId);
 
-        log.info("WS 종료 → 대기열 취소 처리 userId={}, lectureId={}",
-                userId, lectureId);
+        log.info(
+                "WS 종료로 인한 대기열 자동 이탈 userId={} lectureId={}",
+                userId, lectureId
+        );
     }
 
-
-
     /**
-     * Redis ZSet에 저장될 value 생성
+     * Redis ZSet value 생성
      * userId:lectureId
      */
     private String generateValue(Long userId, Long lectureId) {
@@ -171,17 +201,30 @@ public class QueueService {
                         "/queue-rank",
                         rank
                 );
+
             } catch (Exception e) {
-                log.error("즉시 알림 실패 - userId={}, lectureId={}", userId, lectureId, e);
+                log.error(
+                        "대기열 즉시 알림 실패 userId={} lectureId={}",
+                        userId, lectureId, e
+                );
             }
         }
     }
 
-    // 55분 - 대기열 초기화
+    /**
+     * 대기열 전체 초기화
+     */
     public void clearAllQueues() {
-        log.info("대기열 초기화 시작");
-        redisTemplate.delete(QUEUE_KEY);
-        log.info("대기열 초기화 완료");
-    }
+        log.info("대기열 전체 초기화 시작");
 
+        try {
+            redisTemplate.delete(QUEUE_KEY);
+            subscribers.clear();
+        } catch (Exception e) {
+            log.error("대기열 전체 초기화 실패", e);
+            throw e;
+        }
+
+        log.info("대기열 전체 초기화 완료");
+    }
 }
