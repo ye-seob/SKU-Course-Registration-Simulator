@@ -40,7 +40,7 @@ public enum ErrorCode {
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "CART_NOT_FOUND", "장바구니가 존재하지 않습니다."),
     CART_LECTURE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "CART_LECTURE_ALREADY_EXISTS", "이미 장바구니에 담긴 강의입니다."),
     CART_LECTURE_NOT_FOUND(HttpStatus.BAD_REQUEST, "CART_LECTURE_NOT_FOUND", "장바구니에 해당 강의가 존재하지 않습니다."),
-
+    CART_LECTURE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "CART_LECTURE_LIMIT_EXCEEDED", "장바구니에 담을 수 있는 최대 강의 수를 초과했습니다."),
 
     // 서버/DB 관련
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버 오류가 발생했습니다."),

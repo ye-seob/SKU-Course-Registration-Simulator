@@ -21,6 +21,6 @@ public interface CartLectureRepository extends JpaRepository<CartLecture, CartLe
     // 장바구니에 담긴 강의 삭제
     void deleteByCartAndLecture(Cart cart, Lecture lecture);
 
-    // 장바구니 삭제
-    void deleteAllByCart(Cart cart);
+    // 장바구니에 담긴 강의 수 조회
+    int countByCart(Cart cart);
 }

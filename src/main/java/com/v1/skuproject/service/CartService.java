@@ -52,7 +52,11 @@ public class CartService {
                     log.info("장바구니 신규 생성 userId={}", userId);
                     return newCart;
                 });
-
+        // 장바구니 강의 수 확인
+        if (cartLectureRepository.countByCart(cart) >= 10) {
+            log.warn("장바구니 최대 강의 수 초과 userId={}", userId);
+            throw new BaseException(ErrorCode.CART_LECTURE_LIMIT_EXCEEDED);
+        }
         // 이미 담긴 강의인지 확인
         if (cartLectureRepository.findByCartAndLecture(cart, lecture).isPresent()) {
             log.warn("장바구니 중복 추가 시도 userId={} lectureId={}", userId, lectureId);
