@@ -18,23 +18,7 @@ public class EnrollmentScheduler {
     private final QueueService queueService;
     private final LectureRankingService lectureRankingService;
 
-    // 00분 - 수강신청 오픈
-    @Scheduled(cron = "0 0 * * * *")
-    public void openEnrollment() {
 
-        log.info("수강신청 오픈");
-
-        enrollmentService.openEnrollment(); // 상태 플래그 ON
-    }
-
-    // 50분 - 신청 마감
-    @Scheduled(cron = "0 50 * * * *")
-    public void closeEnrollment() {
-
-        log.info("수강신청 마감");
-
-        enrollmentService.closeEnrollment(); // 상태 플래그 OFF
-    }
 
     // 55분 - 초기화
     @Scheduled(cron = "0 55 * * * *")
