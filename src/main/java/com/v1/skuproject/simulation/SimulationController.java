@@ -3,6 +3,7 @@ package com.v1.skuproject.simulation;
 import com.v1.skuproject.queue.QueueService;
 import com.v1.skuproject.service.EnrollmentService;
 import com.v1.skuproject.util.LectureRankingService;
+import com.v1.skuproject.util.TimeChecker;
 import com.v1.skuproject.util.response.ApiResponse;
 import com.v1.skuproject.util.response.ResponseHandler;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +27,12 @@ public class SimulationController {
     private final EnrollmentService enrollmentService;
     private final QueueService queueService;
     private final LectureRankingService lectureRankingService;
+    private final TimeChecker timeChecker;
 
     @PostMapping("/start")
     public ResponseEntity<ApiResponse<String>> startSimulation() {
         log.info("=== [HTTP 트리거] 시뮬레이션 시작 요청 ===");
-        enrollmentService.openEnrollment();
+
         try {
             simulationService.startSimulation();
 

@@ -9,6 +9,7 @@ import com.v1.skuproject.repository.EnrollmentRepository;
 import com.v1.skuproject.repository.LectureRepository;
 import com.v1.skuproject.repository.UserRepository;
 import com.v1.skuproject.util.ScheduleUtil;
+import com.v1.skuproject.util.TimeChecker;
 import com.v1.skuproject.util.exception.BaseException;
 import com.v1.skuproject.util.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +28,7 @@ public class EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final LectureRepository lectureRepository;
     private final UserRepository userRepository;
-
-    // 수강신청 가능 여부 플래그
-    private volatile boolean enrollmentOpen = false;
+    private final TimeChecker timeChecker;
 
     @Transactional(readOnly = true)
     public List<EnrollmentResponse> getEnrollments(Long userId) {
@@ -45,11 +44,7 @@ public class EnrollmentService {
     @Transactional
     public EnrollmentResponse enroll(Long userId, Long lectureId) {
 
-        // 수강신청 가능 여부 확인
-        if (!enrollmentOpen) {
-            log.info("수강신청 실패(CLOSED) userId={}, lectureId={}", userId, lectureId);
-            return EnrollmentResponse.fail("수강신청 마감");
-        }
+        timeChecker.validate();
 
 
         User user = userRepository.findById(userId)
@@ -110,9 +105,7 @@ public class EnrollmentService {
     @Transactional
     public void enrollDummy(Long lectureId) {
 
-        if (!enrollmentOpen) {
-            return;
-        }
+        timeChecker.validate();
 
         Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
                 .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
@@ -149,17 +142,6 @@ public class EnrollmentService {
         return EnrollmentResponse.from(enrollment);
     }
 
-    // 00분 - 수강신청 오픈
-    public void openEnrollment() {
-        enrollmentOpen = true;
-        log.info("수강신청 오픈");
-    }
-
-    // 50분 - 수강신청 마감
-    public void closeEnrollment() {
-        enrollmentOpen = false;
-        log.info("수강신청 마감");
-    }
 
 
     // 55분 - 신청 내역 초기화
