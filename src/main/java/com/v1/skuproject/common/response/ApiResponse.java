@@ -1,4 +1,4 @@
-package com.v1.skuproject.util.response;
+package com.v1.skuproject.common.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.v1.skuproject.util.exception;
+package com.v1.skuproject.common.exception;
 
 import lombok.Getter;
 
