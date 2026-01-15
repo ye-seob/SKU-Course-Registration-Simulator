@@ -2,9 +2,9 @@ package com.v1.skuproject.controller;
 
 import com.v1.skuproject.common.response.ApiResponse;
 import com.v1.skuproject.common.response.ResponseHandler;
-import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.domain.lecture.LectureType;
 import com.v1.skuproject.domain.user.Major;
+import com.v1.skuproject.dto.lecture.LectureResponse;
 import com.v1.skuproject.service.LectureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +30,7 @@ public class LectureController {
             description = "어느 학과인지, 강의 유형, 검색어를 기준으로 강의를 검색. 모든 파라미터는 선택 사항"
     )
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Lecture>>> getLectures(
+    public ResponseEntity<ApiResponse<List<LectureResponse>>> getLectures(
             @RequestParam(name = "major", required = false) Major major,
             @RequestParam(name = "type", required = false) LectureType type,
             @RequestParam(name = "keyword", required = false) String keyword
@@ -40,7 +40,7 @@ public class LectureController {
                 major, type, keyword
         );
 
-        List<Lecture> lectures = lectureService.searchLectures(major, type, keyword);
+        List<LectureResponse> lectures = lectureService.searchLectures(major, type, keyword);
 
         return ResponseHandler.ok(lectures);
     }

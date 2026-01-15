@@ -6,6 +6,7 @@ import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.domain.lecture.LectureRating;
 import com.v1.skuproject.domain.lecture.LectureType;
 import com.v1.skuproject.domain.user.Major;
+import com.v1.skuproject.dto.lecture.LectureResponse;
 import com.v1.skuproject.repository.LectureRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class LectureService {
     /**
      * 강의 검색
      */
-    public List<Lecture> searchLectures(Major major, LectureType type, String keyword) {
+    public List<LectureResponse> searchLectures(Major major, LectureType type, String keyword) {
 
         log.debug("강의 검색 조건 major={}, type={}, keyword={}", major, type, keyword);
 
@@ -54,24 +55,10 @@ public class LectureService {
         });
 
 
-        return lectures.stream()
-                .map(l -> Lecture.builder()
-                        .id(l.getId())
-                        .lectureName(l.getLectureName())
-                        .enrollment(l.getEnrollment())
-                        .capacity(l.getCapacity())
-                        .major(l.getMajor())
-                        .classNumber(l.getClassNumber())
-                        .time(l.getTime())
-                        .professor(l.getProfessor())
-                        .schedule(l.getSchedule())
-                        .rating(l.getRating())
-                        .gradingMethod(l.getGradingMethod())
-                        .lectureCode(l.getLectureCode())
-                        .type(l.getType())
-                        .room(l.getRoom())
-                        .build())
+        return  lectures.stream()
+                .map(LectureResponse::from)
                 .collect(Collectors.toList());
+
     }
 
     /**
