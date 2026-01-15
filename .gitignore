@@ -33,5 +33,10 @@ out/
 /nbdist/
 /.nb-gradle/
 
+/nginx/certbot
+
 ### VS Code ###
 .vscode/
+
+
+.env
