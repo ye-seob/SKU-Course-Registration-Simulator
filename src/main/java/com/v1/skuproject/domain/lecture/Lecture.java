@@ -66,6 +66,10 @@ public class Lecture {
     @Column(name = "grading_method",nullable = true)
     private String gradingMethod;
 
+    // 강의실
+    @Column(name = "room", nullable = false)
+    private String room;
+
     // {"월":["25","26"],"수":["21","22"],"목":["22","22"]}
     @Column(nullable = false, columnDefinition = "TEXT")
     private String schedule;

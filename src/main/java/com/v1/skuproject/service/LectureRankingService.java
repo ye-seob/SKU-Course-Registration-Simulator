@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -18,8 +17,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class LectureRankingService {
     private final LectureRepository lectureRepository;
-
-    private final Random random = new Random();
 
     private List<Lecture> ranking = new ArrayList<>();
 

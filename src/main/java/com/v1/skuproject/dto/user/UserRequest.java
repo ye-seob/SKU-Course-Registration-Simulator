@@ -25,6 +25,10 @@ public class UserRequest {
         @NotBlank(message = "비밀번호를 입력해 주세요.")
         @Size(min = 6, max = 20, message = "비밀번호는 6~20자리여야 합니다.")
         private String password;
+
+        private int grade;
+        private Major minor;
+        private Major convergenceMajor;
     }
 
     @Getter

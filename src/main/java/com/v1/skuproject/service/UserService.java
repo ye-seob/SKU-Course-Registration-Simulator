@@ -33,8 +33,11 @@ public class UserService {
         User user = User.builder()
                 .studentId(request.getStudentId())
                 .name(request.getName())
+                .grade(request.getGrade())
                 .major(request.getMajor())
                 .password(encodedPassword)
+                .convergenceMajor(request.getConvergenceMajor())
+                .minor(request.getMinor())
                 .build();
 
         Long userId = userRepository.save(user).getId();

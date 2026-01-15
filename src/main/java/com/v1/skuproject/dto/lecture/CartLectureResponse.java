@@ -6,6 +6,7 @@ import com.v1.skuproject.domain.lecture.LectureType;
 import com.v1.skuproject.domain.user.Major;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@RequiredArgsConstructor
 public class CartLectureResponse {
 
 
@@ -41,7 +43,7 @@ public class CartLectureResponse {
 
     private final Double time;
 
-    // 강의 시간표 정보 (예: 월(9:00~11:45))
+    // 강의 시간표 정보
     private final String schedule;
 
     // 개설 전공
@@ -55,6 +57,10 @@ public class CartLectureResponse {
 
     // 강의 평점
     private final Double rating;
+
+    private final String room;
+
+    private  final  String gradingMethod;
 
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -78,8 +84,8 @@ public class CartLectureResponse {
                 .enrollment(cartLecture.getLecture().getEnrollment())
                 .capacity(cartLecture.getLecture().getCapacity())
                 .rating(cartLecture.getLecture().getRating())
-
-
+                .room(cartLecture.getLecture().getRoom())
+                .gradingMethod(cartLecture.getLecture().getGradingMethod())
                 .addedAt(cartLecture.getAddedAt())
                 .build();
     }

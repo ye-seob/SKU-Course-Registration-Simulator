@@ -3,6 +3,7 @@ package com.v1.skuproject.simulation;
 import com.v1.skuproject.queue.QueueService;
 import com.v1.skuproject.service.EnrollmentService;
 import com.v1.skuproject.service.LectureRankingService;
+import com.v1.skuproject.util.TimeChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,6 +19,15 @@ public class EnrollmentScheduler {
     private final EnrollmentService enrollmentService;
     private final QueueService queueService;
     private final LectureRankingService lectureRankingService;
+    private final TimeChecker timeChecker;
+    private final SimulationService simulationService;
+
+    @Scheduled(cron = "0 0 * * * *") // 매 정각 0분 0초
+    public void openEnrollment() {
+        timeChecker.validate();         // 운영 시간 체크
+        simulationService.startSimulation(); // 더미 유저 시뮬레이션 시작
+    }
+
 
     // 55분 - 초기화
     @Scheduled(cron = "0 55 * * * *")
