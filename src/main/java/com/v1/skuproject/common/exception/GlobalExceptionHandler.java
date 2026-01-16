@@ -3,9 +3,10 @@ package com.v1.skuproject.common.exception;
 import com.v1.skuproject.common.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 @Slf4j
 @RestControllerAdvice //  @Controller나 @RestController에서 발생하는 예외를 가로챔
 public class GlobalExceptionHandler {
@@ -31,6 +32,32 @@ public class GlobalExceptionHandler {
 
 
         return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
+
+
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Object>> handleValidationException(MethodArgumentNotValidException ex) {
+
+        // 첫 번째 필드 에러 메시지만 가져오기 (원하면 모든 필드도 가능)
+        String message = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(FieldError::getDefaultMessage)
+                .orElse("요청 값이 올바르지 않습니다.");
+
+        ApiResponse<Object> response = ApiResponse.<Object>builder()
+                .success(false)
+                .data(null)
+                .code("VALIDATION_ERROR")
+                .message(message)
+                .build();
+
+        log.debug("Validation 예외 발생 message={}", message);
+
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(Exception.class)

@@ -28,6 +28,11 @@ public class UserService {
             throw new BaseException(ErrorCode.USER_ALREADY_EXISTS);
         }
 
+        if (!request.getPassword().equals(request.getPasswordConfirm())) {
+            throw new BaseException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         User user = User.builder()
@@ -36,8 +41,6 @@ public class UserService {
                 .grade(request.getGrade())
                 .major(request.getMajor())
                 .password(encodedPassword)
-                .convergenceMajor(request.getConvergenceMajor())
-                .minor(request.getMinor())
                 .build();
 
         Long userId = userRepository.save(user).getId();
