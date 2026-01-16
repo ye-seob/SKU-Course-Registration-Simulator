@@ -26,3 +26,7 @@ lecture:
     end-hour: 24
     open-minute: 0
     close-minute: 60
+
+cors:
+  allowed-origins:
+    - http://localhost:5173

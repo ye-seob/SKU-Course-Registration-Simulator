@@ -25,3 +25,9 @@ lecture:
     end-hour: 16
     open-minute: 0
     close-minute: 50
+
+cors:
+  allowed-origins:
+    - https://skusimulator.com
+    - https://www.skusimulator.com
+    - https://skusimulator.netlify.app

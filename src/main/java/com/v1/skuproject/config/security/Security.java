@@ -3,6 +3,7 @@ package com.v1.skuproject.config.security;
 import com.v1.skuproject.config.jwt.JwtAuthenticationFilter;
 import com.v1.skuproject.config.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -24,20 +26,21 @@ public class Security {
 
     private final JwtProvider jwtProvider;
 
+    @Value("${cors.allowed-origins}")
+    private List<String> allowedOrigins;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // CORS 설정 적용
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // CSRF 비활성화
                 .csrf(csrf -> csrf.disable())
 
-                // 세션을 사용하지 않도록 설정
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sm ->
+                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
-                // 인증 없이 접근 가능한 API
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/login",
@@ -45,8 +48,8 @@ public class Security {
                                 "/swagger-ui/**",
                                 "/ws/**",
                                 "/v3/api-docs/**",
-				                "/app/**",
-				                "/user/**",
+                                "/app/**",
+                                "/user/**",
                                 "/topic/**",
                                 "/queue/**",
                                 "/api/v1/simulation/**"
@@ -54,7 +57,6 @@ public class Security {
                         .anyRequest().authenticated()
                 )
 
-                // UsernamePasswordAuthenticationFilter 앞에 JWT 필터 추가
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class
@@ -70,13 +72,20 @@ public class Security {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
+
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*");
+
+        for (String origin : allowedOrigins) {
+            config.addAllowedOrigin(origin);
+        }
+
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
         return source;
