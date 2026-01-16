@@ -4,7 +4,10 @@ import com.v1.skuproject.domain.user.Major;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class UserRequest {
 
@@ -12,7 +15,6 @@ public class UserRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
     public static class SignUp {
         private int studentId;
 
@@ -26,16 +28,17 @@ public class UserRequest {
         @Size(min = 6, max = 20, message = "비밀번호는 6~20자리여야 합니다.")
         private String password;
 
+        @NotBlank(message = "비밀번호 확인을 입력해 주세요.")
+        private String passwordConfirm;
+
+
         private int grade;
-        private Major minor;
-        private Major convergenceMajor;
     }
 
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
     public static class Login {
         private int studentId;
 

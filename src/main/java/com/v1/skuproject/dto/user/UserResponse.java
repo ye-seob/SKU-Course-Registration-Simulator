@@ -17,8 +17,6 @@ public class UserResponse {
         private String name;
 
         private Major major;               // 주전공
-        private Major minor;               // 부전공
-        private Major convergenceMajor;    // 융합전공
 
         private int grade;                 // 학년
         private int maxCredit;             // 최대 신청 학점
@@ -31,8 +29,6 @@ public class UserResponse {
                     .studentId(user.getStudentId())
                     .name(user.getName())
                     .major(user.getMajor())
-                    .minor(user.getMinor())
-                    .convergenceMajor(user.getConvergenceMajor())
                     .grade(user.getGrade())
                     .maxCredit(user.getMaxCredit())
                     .token(token)
