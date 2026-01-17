@@ -32,7 +32,7 @@ public class QueueScheduler {
     @Scheduled(fixedDelay = 1000)
     public void processQueue() {
 
-        int processCount = ThreadLocalRandom.current().nextInt(10, 50);
+        int processCount = ThreadLocalRandom.current().nextInt(10, 100);
 
         Set<String> values = redisTemplate.opsForZSet()
                 .range("enrollment:queue", 0, processCount - 1);
@@ -41,7 +41,6 @@ public class QueueScheduler {
             return;
         }
 
-        log.info("수강신청 대기열 처리 시작 처리건수={}", values.size());
 
         for (String value : values) {
             if (value == null) {
@@ -115,6 +114,5 @@ public class QueueScheduler {
             }
         }
 
-        log.info("수강신청 대기열 처리 종료");
     }
 }
