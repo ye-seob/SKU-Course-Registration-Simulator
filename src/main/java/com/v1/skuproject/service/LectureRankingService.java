@@ -85,9 +85,9 @@ public class LectureRankingService {
 
         LectureType type = lecture.getType();
 
-        if (type == LectureType.전핵 || type == LectureType.교필) {
+        if (type == LectureType.전핵 || type == LectureType.교선) {
             base = 100;
-        } else if (type == LectureType.전선 || type == LectureType.교선) {
+        } else if (type == LectureType.전선 || type == LectureType.교필) {
             base = 60;
         } else {
             base = 30;
