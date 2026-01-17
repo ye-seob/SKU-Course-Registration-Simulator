@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class SimulationService {
 
-
     private static final String QUEUE_KEY = "enrollment:queue";
 
     private final LectureRepository lectureRepository;
@@ -33,15 +32,16 @@ public class SimulationService {
             Executors.newScheduledThreadPool(10);
 
     /**
-          long이면 동시성 문제 발생 가능
+     long이면 동시성 문제 발생 가능
      */
     private final AtomicLong userIdSeq = new AtomicLong(0);
 
     /**
-       boolean이면 동시성 문제 발생 가능
+     boolean이면 동시성 문제 발생 가능
      */
     private volatile boolean isRunning = false;
 
+    private long simulationStartTime;
 
     public void startSimulation() {
         if (isRunning) {
@@ -50,32 +50,27 @@ public class SimulationService {
         }
 
         isRunning = true;
+        simulationStartTime = System.currentTimeMillis();
         log.info("=== 더미 유저 시뮬레이션 시작 ===");
-
 
         addInitialDummy();
 
         /**
-         * 초당 30~60명
+         * 초당 10~50명
          */
-        addContinuousDummy(0, 3, 30, 60);
-
-        /**
-         * 초당 15~35명
-         */
-        addContinuousDummy(3, 10, 15, 35);
-
         /**
          * 초당 5~15명
          */
-        addContinuousDummy(10, 30, 5, 15);
+        /**
+         * 초당 1~10명
+         */
+        scheduler.scheduleAtFixedRate(this::addContinuousDummy, 0, 1, TimeUnit.SECONDS);
 
         /**
          * 30분 후 자동 종료
          */
         scheduler.schedule(this::stopSimulation, 30, TimeUnit.MINUTES);
     }
-
 
     public void stopSimulation() {
         isRunning = false;
@@ -97,45 +92,40 @@ public class SimulationService {
     }
 
     /**
-     * 초 단위 지속 유입 스케줄링
-     *
-     * @param startMin       시작 분
-     * @param endMin         종료 분
-     * @param perSecondMin   초당 최소 유입
-     * @param perSecondMax   초당 최대 유입
-     *
+     * 초 단위 지속 유입
      */
-    private void addContinuousDummy(
-            int startMin,
-            int endMin,
-            int perSecondMin,
-            int perSecondMax
-    ) {
+    private void addContinuousDummy() {
+        if (!isRunning) {
+            return;
+        }
 
-        long startSec = startMin * 60L;
+        long elapsedSec =
+                (System.currentTimeMillis() - simulationStartTime) / 1000;
 
-        scheduler.scheduleAtFixedRate(() -> {
-            if (!isRunning) return;
+        int count;
 
-            int count =
-                    ThreadLocalRandom.current()
-                            .nextInt(perSecondMin, perSecondMax + 1);
+        if (elapsedSec <= 30) {
+            count = random(60, 80);
+        } else if (elapsedSec <= 120) {
+            count = random(40, 60);
+        } else if (elapsedSec <= 300) {
+            count = random(20, 40);
+        } else if (elapsedSec <= 600) {
+            count = random(1, 5);
+        } else {
+            return;
+        }
 
-            List<DummyUser> users = createDummyUsers(count);
+        List<DummyUser> users = createDummyUsers(count);
 
-            for (DummyUser user : users) {
-                enterDummyUser(user);
-            }
-
-            log.debug(
-                    "[{}~{}분] 초당 {}명 유입",
-                    startMin, endMin, count
-            );
-
-        }, startSec, 1, TimeUnit.SECONDS);
-        
+        for (DummyUser user : users) {
+            enterDummyUser(user);
+        }
     }
 
+    private int random(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
 
     private List<DummyUser> createDummyUsers(int count) {
         List<Lecture> lectures = lectureRepository.findAll();
@@ -149,9 +139,7 @@ public class SimulationService {
         for (int i = 0; i < count; i++) {
             long userId = userIdSeq.incrementAndGet();
 
-
             Lecture lecture = lectureRankingService.pickLecture();
-
             users.add(DummyUser.create(userId, lecture.getId()));
         }
 
