@@ -34,7 +34,7 @@ public class TimeChecker {
                     "[시간 차단] 현재 시각: {}, 허용 시간: {}시 ~ {}시",
                     now, startHour, endHour
             );
-            throw new BaseException(ErrorCode.ENROLLMENT_TIME_CONFLICT);
+            throw new BaseException(ErrorCode.ENROLLMENT_TIME_INVALID);
         }
 
         if (minute < openMinute || minute >= closeMinute) {
@@ -42,7 +42,7 @@ public class TimeChecker {
                     "[분 단위 차단] 현재 시각: {}, 허용 분: {}분 ~ {}분",
                     now, openMinute, closeMinute
             );
-            throw new BaseException(ErrorCode.ENROLLMENT_TIME_CONFLICT);
+            throw new BaseException(ErrorCode.ENROLLMENT_TIME_INVALID);
         }
     }
 }

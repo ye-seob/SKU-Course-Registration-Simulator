@@ -84,7 +84,6 @@ public class QueueService {
 
             subscribers.put(userId, lectureId);
 
-            log.info("대기열 등록 userId={} lectureId={}", userId, lectureId);
 
             // 즉시 한 번 알림 전송
             notifyQueueUpdate();
@@ -130,7 +129,6 @@ public class QueueService {
             redisTemplate.opsForZSet().remove(QUEUE_KEY, value);
             subscribers.remove(userId);
 
-            log.info("대기열 이탈 userId={} lectureId={}", userId, lectureId);
 
         } catch (Exception e) {
             log.error(
