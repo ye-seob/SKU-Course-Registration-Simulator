@@ -1,7 +1,6 @@
 package com.v1.skuproject.service;
 
 import com.v1.skuproject.domain.lecture.Lecture;
-import com.v1.skuproject.domain.lecture.LectureType;
 import com.v1.skuproject.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,18 +80,15 @@ public class LectureRankingService {
 
 
     private double getScore(Lecture lecture) {
-        double base;
+        double baseScore;
 
-        LectureType type = lecture.getType();
-
-        if (type == LectureType.전핵 || type == LectureType.교선) {
-            base = 100;
-        } else if (type == LectureType.전선 || type == LectureType.교필) {
-            base = 60;
-        } else {
-            base = 30;
+        switch (lecture.getType()) {
+            case 전핵, 전심, 교선 -> baseScore = 120;
+            case 자선, 전선, 전공 -> baseScore = 60;
+            default -> baseScore = 30;
         }
 
-        return base + lecture.getRating();
+
+        return baseScore + lecture.getRating();
     }
 }
