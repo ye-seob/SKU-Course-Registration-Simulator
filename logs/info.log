@@ -1,0 +1,80 @@
+[2025-12-13 00:03:40.436] [INFO ] [background-preinit] o.h.validator.internal.util.Version [traceId=] - HV000001: Hibernate Validator 8.0.3.Final
+[2025-12-13 00:03:40.475] [INFO ] [main] c.v.skuproject.SkuProjectApplication [traceId=] - Starting SkuProjectApplication using Java 17.0.17 with PID 1290073 (/home/ubuntu/IdeaProjects/skuProject/out/production/classes started by ubuntu in /home/ubuntu/IdeaProjects/skuProject)
+[2025-12-13 00:03:40.476] [INFO ] [main] c.v.skuproject.SkuProjectApplication [traceId=] - No active profile set, falling back to 1 default profile: "default"
+[2025-12-13 00:03:41.251] [INFO ] [main] o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2025-12-13 00:03:41.325] [INFO ] [main] o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Finished Spring Data repository scanning in 65 ms. Found 5 JPA repository interfaces.
+[2025-12-13 00:03:41.836] [INFO ] [main] o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat initialized with port 8080 (http)
+[2025-12-13 00:03:41.846] [INFO ] [main] o.a.coyote.http11.Http11NioProtocol [traceId=] - Initializing ProtocolHandler ["http-nio-8080"]
+[2025-12-13 00:03:41.847] [INFO ] [main] o.a.catalina.core.StandardService [traceId=] - Starting service [Tomcat]
+[2025-12-13 00:03:41.848] [INFO ] [main] o.a.catalina.core.StandardEngine [traceId=] - Starting Servlet engine: [Apache Tomcat/10.1.48]
+[2025-12-13 00:03:41.893] [INFO ] [main] o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring embedded WebApplicationContext
+[2025-12-13 00:03:41.894] [INFO ] [main] o.s.b.w.s.c.ServletWebServerApplicationContext [traceId=] - Root WebApplicationContext: initialization completed in 1381 ms
+[2025-12-13 00:03:42.034] [INFO ] [main] o.h.jpa.internal.util.LogHelper [traceId=] - HHH000204: Processing PersistenceUnitInfo [name: default]
+[2025-12-13 00:03:42.075] [INFO ] [main] org.hibernate.Version [traceId=] - HHH000412: Hibernate ORM core version 6.6.33.Final
+[2025-12-13 00:03:42.105] [INFO ] [main] o.h.c.i.RegionFactoryInitiator [traceId=] - HHH000026: Second-level cache disabled
+[2025-12-13 00:03:42.317] [INFO ] [main] o.s.o.j.p.SpringPersistenceUnitInfo [traceId=] - No LoadTimeWeaver setup: ignoring JPA class transformer
+[2025-12-13 00:03:42.337] [INFO ] [main] com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Starting...
+[2025-12-13 00:03:42.454] [INFO ] [main] com.zaxxer.hikari.pool.HikariPool [traceId=] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@53a09566
+[2025-12-13 00:03:42.456] [INFO ] [main] com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Start completed.
+[2025-12-13 00:03:42.512] [INFO ] [main] o.hibernate.orm.connections.pooling [traceId=] - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.44
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+[2025-12-13 00:03:43.262] [INFO ] [main] o.h.e.t.j.p.i.JtaPlatformInitiator [traceId=] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2025-12-13 00:03:43.337] [INFO ] [main] o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2025-12-13 00:03:43.966] [INFO ] [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer [traceId=] - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+[2025-12-13 00:03:44.277] [INFO ] [main] o.a.coyote.http11.Http11NioProtocol [traceId=] - Starting ProtocolHandler ["http-nio-8080"]
+[2025-12-13 00:03:44.289] [INFO ] [main] o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat started on port 8080 (http) with context path '/'
+[2025-12-13 00:03:44.301] [INFO ] [main] c.v.skuproject.SkuProjectApplication [traceId=] - Started SkuProjectApplication in 4.197 seconds (process running for 5.009)
+[2025-12-13 00:03:53.004] [INFO ] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+[2025-12-13 00:03:53.005] [INFO ] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet [traceId=] - Initializing Servlet 'dispatcherServlet'
+[2025-12-13 00:03:53.006] [INFO ] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet [traceId=] - Completed initialization in 1 ms
+[2025-12-13 00:07:37.144] [INFO ] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Commencing graceful shutdown. Waiting for active requests to complete
+[2025-12-13 00:07:37.147] [INFO ] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Graceful shutdown complete
+[2025-12-13 00:07:37.152] [INFO ] [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Closing JPA EntityManagerFactory for persistence unit 'default'
+[2025-12-13 00:07:37.153] [INFO ] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Shutdown initiated...
+[2025-12-13 00:07:37.159] [INFO ] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Shutdown completed.
+[2025-12-13 00:07:41.369] [INFO ] [background-preinit] o.h.validator.internal.util.Version [traceId=] - HV000001: Hibernate Validator 8.0.3.Final
+[2025-12-13 00:07:41.409] [INFO ] [main] c.v.skuproject.SkuProjectApplication [traceId=] - Starting SkuProjectApplication using Java 17.0.17 with PID 1290233 (/home/ubuntu/IdeaProjects/skuProject/out/production/classes started by ubuntu in /home/ubuntu/IdeaProjects/skuProject)
+[2025-12-13 00:07:41.412] [INFO ] [main] c.v.skuproject.SkuProjectApplication [traceId=] - No active profile set, falling back to 1 default profile: "default"
+[2025-12-13 00:07:42.208] [INFO ] [main] o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2025-12-13 00:07:42.282] [INFO ] [main] o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Finished Spring Data repository scanning in 66 ms. Found 5 JPA repository interfaces.
+[2025-12-13 00:07:42.777] [INFO ] [main] o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat initialized with port 8080 (http)
+[2025-12-13 00:07:42.787] [INFO ] [main] o.a.coyote.http11.Http11NioProtocol [traceId=] - Initializing ProtocolHandler ["http-nio-8080"]
+[2025-12-13 00:07:42.788] [INFO ] [main] o.a.catalina.core.StandardService [traceId=] - Starting service [Tomcat]
+[2025-12-13 00:07:42.789] [INFO ] [main] o.a.catalina.core.StandardEngine [traceId=] - Starting Servlet engine: [Apache Tomcat/10.1.48]
+[2025-12-13 00:07:42.833] [INFO ] [main] o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring embedded WebApplicationContext
+[2025-12-13 00:07:42.834] [INFO ] [main] o.s.b.w.s.c.ServletWebServerApplicationContext [traceId=] - Root WebApplicationContext: initialization completed in 1383 ms
+[2025-12-13 00:07:42.969] [INFO ] [main] o.h.jpa.internal.util.LogHelper [traceId=] - HHH000204: Processing PersistenceUnitInfo [name: default]
+[2025-12-13 00:07:43.012] [INFO ] [main] org.hibernate.Version [traceId=] - HHH000412: Hibernate ORM core version 6.6.33.Final
+[2025-12-13 00:07:43.042] [INFO ] [main] o.h.c.i.RegionFactoryInitiator [traceId=] - HHH000026: Second-level cache disabled
+[2025-12-13 00:07:43.256] [INFO ] [main] o.s.o.j.p.SpringPersistenceUnitInfo [traceId=] - No LoadTimeWeaver setup: ignoring JPA class transformer
+[2025-12-13 00:07:43.277] [INFO ] [main] com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Starting...
+[2025-12-13 00:07:43.393] [INFO ] [main] com.zaxxer.hikari.pool.HikariPool [traceId=] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@237aa0c7
+[2025-12-13 00:07:43.395] [INFO ] [main] com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Start completed.
+[2025-12-13 00:07:43.451] [INFO ] [main] o.hibernate.orm.connections.pooling [traceId=] - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.44
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+[2025-12-13 00:07:44.215] [INFO ] [main] o.h.e.t.j.p.i.JtaPlatformInitiator [traceId=] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2025-12-13 00:07:44.289] [INFO ] [main] o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2025-12-13 00:07:44.927] [INFO ] [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer [traceId=] - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+[2025-12-13 00:07:45.247] [INFO ] [main] o.a.coyote.http11.Http11NioProtocol [traceId=] - Starting ProtocolHandler ["http-nio-8080"]
+[2025-12-13 00:07:45.258] [INFO ] [main] o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat started on port 8080 (http) with context path '/'
+[2025-12-13 00:07:45.271] [INFO ] [main] c.v.skuproject.SkuProjectApplication [traceId=] - Started SkuProjectApplication in 4.234 seconds (process running for 4.976)
+[2025-12-13 00:08:00.630] [INFO ] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+[2025-12-13 00:08:00.631] [INFO ] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet [traceId=] - Initializing Servlet 'dispatcherServlet'
+[2025-12-13 00:08:00.632] [INFO ] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet [traceId=] - Completed initialization in 1 ms
+[2025-12-13 10:12:35.578] [INFO ] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Commencing graceful shutdown. Waiting for active requests to complete
+[2025-12-13 10:12:35.581] [INFO ] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Graceful shutdown complete
+[2025-12-13 10:12:35.587] [INFO ] [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Closing JPA EntityManagerFactory for persistence unit 'default'
+[2025-12-13 10:12:35.589] [INFO ] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Shutdown initiated...
+[2025-12-13 10:12:35.592] [INFO ] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Shutdown completed.

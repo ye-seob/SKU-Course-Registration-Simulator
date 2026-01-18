@@ -5,7 +5,6 @@ public enum LectureType {
     전선,
     전심,
     전공,
-
     교필,
     균교,
     교선,
