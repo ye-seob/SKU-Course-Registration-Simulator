@@ -5,6 +5,7 @@ services:
     image: mysql:8.0
     container_name: mysql
     environment:
+      TZ: Asia/Seoul
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
@@ -24,6 +25,8 @@ services:
   redis:
     image: redis:7
     container_name: redis
+    environment:
+      TZ: Asia/Seoul
     expose:
       - "6379"
     networks:
@@ -40,6 +43,7 @@ services:
     expose:
       - "8080"
     environment:
+      TZ: Asia/Seoul
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     networks:
       - backend
@@ -47,6 +51,8 @@ services:
   nginx:
     build: ./nginx
     container_name: nginx
+    environment:
+      TZ: Asia/Seoul
     ports:
       - "80:80"
       - "443:443"
