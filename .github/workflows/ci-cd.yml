@@ -52,6 +52,7 @@ jobs:
           key: ${{ secrets.ORACLE_PRIVATE_KEY }}     # SSH 개인키 (GitHub Secrets)
           envs: GITHUB_SHA
           script: |
+            cd ~/IdeaProjects/skuProject
             # 기존 컨테이너 강제 제거
             sudo docker rm -f sku-course-backend
             # 최신 DockerHub 이미지 가져오기
