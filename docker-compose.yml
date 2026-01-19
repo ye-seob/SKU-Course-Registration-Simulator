@@ -33,7 +33,7 @@ services:
       - backend
 
   backend:
-    build: .
+    image: ${DOCKER_REPO}:v1
     container_name: sku-course-backend
     depends_on:
       mysql:
