@@ -52,12 +52,11 @@ jobs:
           key: ${{ secrets.ORACLE_PRIVATE_KEY }}     # SSH 개인키 (GitHub Secrets)
           envs: GITHUB_SHA
           script: |
-            cd ~/IdeaProjects/skuProject
             # 기존 컨테이너 강제 제거
-            sudo docker rm -f $(docker ps -qa)
+            sudo docker rm -f sku-course-backend
             # 최신 DockerHub 이미지 가져오기
             sudo docker pull ${{ secrets.DOCKER_REPO }}:v1
             # Docker Compose로 컨테이너 빌드 & 실행
-            docker compose up --build -d
+            docker compose up  -d
             # 사용하지 않는 이미지 삭제
             docker image prune -f
