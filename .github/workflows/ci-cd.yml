@@ -1,10 +1,9 @@
-name: CI/CD with Gradle  # 워크플로우 이름
+name: CI/CD
 
 on:
   push:
     branches: [ "main" ]   # main 브랜치에 push될 때 워크플로우 실행
-  pull_request:
-    branches: [ "main" ]   # main 브랜치 대상 PR이 열릴 때 워크플로우 실행
+
 
 permissions:
   contents: read
@@ -21,7 +20,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '17'           # Java 버전
+          java-version: '17'
           distribution: "adopt"
 
       # 3. Gradle 빌드 (테스트 제외)
@@ -36,9 +35,9 @@ jobs:
 
       # 4. Docker 이미지 빌드 & DockerHub 푸시
       - name: Docker build & push
-          run: |
+        run: |
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
-              -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             
             docker buildx build \
               --platform linux/arm64 \
