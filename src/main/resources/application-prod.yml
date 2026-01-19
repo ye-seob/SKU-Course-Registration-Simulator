@@ -3,7 +3,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql:3306/sku_course?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-    username: yeseob
+    username: root
     password: kablose12!!
 
   data:

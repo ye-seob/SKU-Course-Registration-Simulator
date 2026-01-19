@@ -21,6 +21,7 @@ public class LectureResponse {
     private String professor;
     private String schedule;
     private double rating;
+    private String room;
     private String gradingMethod;
     private String lectureCode;
     private LectureType type;
@@ -40,6 +41,7 @@ public class LectureResponse {
                 .professor(lecture.getProfessor())
                 .schedule(lecture.getSchedule())
                 .rating(lecture.getRating())
+                .room(lecture.getRoom())
                 .gradingMethod(lecture.getGradingMethod())
                 .lectureCode(lecture.getLectureCode())
                 .type(lecture.getType())

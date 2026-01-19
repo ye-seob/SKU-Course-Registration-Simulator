@@ -67,7 +67,7 @@ public class Lecture {
     private String gradingMethod;
 
     // 강의실
-    @Column(name = "room", nullable = false)
+    @Column(name = "room")
     private String room;
 
     // {"월":["25","26"],"수":["21","22"],"목":["22","22"]}
