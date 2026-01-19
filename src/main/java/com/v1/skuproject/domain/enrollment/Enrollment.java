@@ -32,6 +32,12 @@ public class Enrollment {
     @JoinColumn(name = "lecture_id", nullable = false)
     private Lecture lecture;
 
+    // 신청 상태 (SUCCESS, FAIL, PENDING)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private EnrollmentStatus status;
+
+
 
     // 생성 시간
     @CreatedDate
@@ -42,6 +48,7 @@ public class Enrollment {
         return Enrollment.builder()
                 .user(user)
                 .lecture(lecture)
+                .status(EnrollmentStatus.SUCCESS)
                 .build();
     }
 
