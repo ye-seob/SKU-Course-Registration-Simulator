@@ -69,7 +69,7 @@ public class SimulationService {
         /**
          * 30분 후 자동 종료
          */
-        scheduler.schedule(this::stopSimulation, 30, TimeUnit.MINUTES);
+        scheduler.schedule(this::stopSimulation, 20, TimeUnit.MINUTES);
     }
 
     public void stopSimulation() {
@@ -104,16 +104,14 @@ public class SimulationService {
 
         int count;
 
-        if (elapsedSec <= 30) {
-            count = random(60, 80);
+        if (elapsedSec <= 60) {
+            count = random(30, 40);
         } else if (elapsedSec <= 120) {
-            count = random(40, 60);
-        } else if (elapsedSec <= 300) {
-            count = random(20, 40);
+            count = random(20, 30);
         } else if (elapsedSec <= 600) {
-            count = random(1, 5);
+            count = random(10, 20);
         } else {
-            return;
+            count = random(1, 5);
         }
 
         List<DummyUser> users = createDummyUsers(count);

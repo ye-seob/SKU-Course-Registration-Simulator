@@ -83,7 +83,8 @@ public class LectureRankingService {
         double baseScore;
 
         switch (lecture.getType()) {
-            case 전핵, 전심, 교선 -> baseScore = 120;
+            case  교선 -> baseScore = 150;
+            case 전핵, 전심 -> baseScore = 120;
             case 자선, 전선, 전공 -> baseScore = 60;
             default -> baseScore = 30;
         }
