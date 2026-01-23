@@ -7,6 +7,7 @@ import com.v1.skuproject.domain.user.User;
 import com.v1.skuproject.dto.user.UserRequest;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.repository.UserRepository;
+import com.v1.skuproject.util.TimeChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final TimeChecker timeChecker;
 
     @Transactional
     public Long createUser(UserRequest.SignUp request){
@@ -52,6 +54,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDto login(UserRequest.Login request) {
+
+        timeChecker.validateLogin();
 
         User user = userRepository.findByStudentId(request.getStudentId())
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));

@@ -22,9 +22,8 @@ spring:
 lecture:
   operation:
     start-hour: 8
-    end-hour: 16
-    open-minute: 0
-    close-minute: 50
+    end-hour: 18
+
 
 cors:
   allowed-origins:

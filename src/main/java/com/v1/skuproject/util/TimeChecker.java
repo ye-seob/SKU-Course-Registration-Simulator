@@ -18,18 +18,12 @@ public class TimeChecker {
     @Value("${lecture.operation.end-hour}")
     private int endHour;
 
-    @Value("${lecture.operation.open-minute}")
-    private int openMinute;
-
-    @Value("${lecture.operation.close-minute}")
-    private int closeMinute;
-
-    public void validate() {
+    public void validateEnrollment() {
         LocalTime now = LocalTime.now();
         int hour = now.getHour();
         int minute = now.getMinute();
 
-        if (hour < startHour || hour >= endHour) {
+        if (hour < startHour || hour > endHour) {
             log.warn(
                     "[시간 차단] 현재 시각: {}, 허용 시간: {}시 ~ {}시",
                     now, startHour, endHour
@@ -37,12 +31,28 @@ public class TimeChecker {
             throw new BaseException(ErrorCode.ENROLLMENT_TIME_INVALID);
         }
 
-        if (minute < openMinute || minute >= closeMinute) {
+        if (minute >= 50) {
             log.warn(
-                    "[분 단위 차단] 현재 시각: {}, 허용 분: {}분 ~ {}분",
-                    now, openMinute, closeMinute
+                    "[수강신청 차단] 현재 시각: {}",
+                    now
             );
             throw new BaseException(ErrorCode.ENROLLMENT_TIME_INVALID);
         }
+
+    }
+
+    public void validateLogin() {
+        LocalTime now = LocalTime.now();
+        int minute = now.getMinute();
+
+        // 50분 ~ 59분 59초 59 로그인 차단
+        if (minute >= 50) {
+            log.warn(
+                    "[로그인 차단] 현재 시각: {}",
+                    now
+            );
+            throw new BaseException(ErrorCode.ENROLLMENT_TIME_INVALID);
+        }
+
     }
 }

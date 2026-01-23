@@ -24,8 +24,6 @@ lecture:
   operation:
     start-hour: 0
     end-hour: 24
-    open-minute: 0
-    close-minute: 60
 
 cors:
   allowed-origins:

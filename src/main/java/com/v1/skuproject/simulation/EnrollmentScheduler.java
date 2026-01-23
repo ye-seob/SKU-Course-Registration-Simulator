@@ -24,23 +24,31 @@ public class EnrollmentScheduler {
 
     @Scheduled(cron = "0 0 * * * *") // 매 정각 0분 0초
     public void openEnrollment() {
-        timeChecker.validate();         // 운영 시간 체크
+        timeChecker.validateEnrollment();
         simulationService.startSimulation(); // 더미 유저 시뮬레이션 시작
     }
 
+    // 50분 수강신청 종료
+    @Scheduled(cron = "0 50 * * * *")
+    public void closeEnrollment() {
+        log.info("수강신청 종료 시작");
 
-    // 55분 - 초기화
-    @Scheduled(cron = "0 55 * * * *")
-    public void resetEnrollment() {
-        log.info("수강신청 초기화 시작");
+        simulationService.stopSimulation();
 
         enrollmentService.resetEnrollmentStatuses(); // 신청 내역 초기화
         queueService.clearAllQueues();               // 대기열 초기화
         enrollmentService.resetLectureCounts();      // 신청 인원 초기화
 
+        log.info("수강신청 종료 완료");
+    }
+
+    // 55분 강의 랭킹 빌드
+    @Scheduled(cron = "0 55 * * * *")
+    public void resetEnrollment() {
+
         // rating + 타입 기준으로 순위 생성
         lectureRankingService.buildRanking();
 
-        log.info("수강신청 초기화 완료");
+        log.info("강의 랭킹 빌드 완료");
     }
 }

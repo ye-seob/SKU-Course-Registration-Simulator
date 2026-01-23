@@ -50,13 +50,8 @@ public class EnrollmentService {
     @Transactional
     public EnrollmentResponse enroll(Long userId, Long lectureId) {
 
-        // 수강신청 가능 시간 검증
-        try {
-            timeChecker.validate();
-        } catch (Exception e) {
-            log.warn("수강신청 시간 오류 userId={} lectureId={}", userId, lectureId);
-            throw new BaseException(ErrorCode.ENROLLMENT_TIME_INVALID);
-        }
+        timeChecker.validateEnrollment();
+
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
@@ -123,7 +118,7 @@ public class EnrollmentService {
     @Transactional
     public void enrollDummy(Long lectureId) {
 
-        timeChecker.validate();
+        timeChecker.validateEnrollment();
 
         Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
                 .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
@@ -163,21 +158,19 @@ public class EnrollmentService {
     }
 
     /**
-     * 55분 - 신청 내역 초기화
+     * 50분 - 신청 내역 초기화
      */
     @Transactional
     public void resetEnrollmentStatuses() {
-        log.info("신청 내역 초기화 시작");
         enrollmentRepository.deleteAllInBatch();
         log.info("신청 내역 초기화 완료");
     }
 
     /**
-     * 55분 - 강의별 신청 인원 초기화
+     * 50분 - 강의별 신청 인원 초기화
      */
     @Transactional
     public void resetLectureCounts() {
-        log.info("강의 신청 인원 초기화 시작");
         lectureRepository.findAll().forEach(Lecture::resetEnrolledCount);
         log.info("강의 신청 인원 초기화 완료");
     }

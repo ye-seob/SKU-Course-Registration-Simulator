@@ -55,15 +55,6 @@ public class SimulationService {
 
         addInitialDummy();
 
-        /**
-         * 초당 10~50명
-         */
-        /**
-         * 초당 5~15명
-         */
-        /**
-         * 초당 1~10명
-         */
         scheduler.scheduleAtFixedRate(this::addContinuousDummy, 0, 1, TimeUnit.SECONDS);
 
         /**
