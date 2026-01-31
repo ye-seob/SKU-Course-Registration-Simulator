@@ -32,14 +32,6 @@ public class LectureRankingService {
         int rank = 1;
 
         for (Lecture lecture : ranking) {
-            log.info(
-                    "{}위 | {} | 타입: {} | 평점: {} | 점수: {}",
-                    rank,
-                    lecture.getLectureName(),
-                    lecture.getType(),
-                    lecture.getRating(),
-                    String.format("%.2f", getScore(lecture))
-            );
             rank++;
         }
 
