@@ -1,8 +1,8 @@
 package com.v1.skuproject.domain.user;
 
 public enum Major {
-    자율전공학부1,
-    자율전공학부2,
+    자유전공학부1,
+    자유전공학부2,
 
     // 미래융합학부 1
     경영계열,
