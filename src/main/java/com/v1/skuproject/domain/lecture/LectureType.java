@@ -9,5 +9,6 @@ public enum LectureType {
     균교,
     교선,
     자선,
-    교직
+    교직,
+    미융교선
 }
