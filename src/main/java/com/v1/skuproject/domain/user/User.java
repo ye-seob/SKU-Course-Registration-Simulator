@@ -24,9 +24,7 @@ public class User {
 
     @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
-    private String password;
+;
 
     //학과
     @Column(unique = false, nullable = false)

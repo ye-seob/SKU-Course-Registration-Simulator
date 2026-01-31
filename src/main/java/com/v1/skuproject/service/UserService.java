@@ -30,19 +30,11 @@ public class UserService {
             throw new BaseException(ErrorCode.USER_ALREADY_EXISTS);
         }
 
-        if (!request.getPassword().equals(request.getPasswordConfirm())) {
-            throw new BaseException(ErrorCode.PASSWORD_MISMATCH);
-        }
-
-
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-
         User user = User.builder()
                 .studentId(request.getStudentId())
                 .name(request.getName())
                 .grade(request.getGrade())
                 .major(request.getMajor())
-                .password(encodedPassword)
                 .build();
 
         Long userId = userRepository.save(user).getId();
@@ -60,9 +52,6 @@ public class UserService {
         User user = userRepository.findByStudentId(request.getStudentId())
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BaseException(ErrorCode.INVALID_CREDENTIALS);
-        }
 
         // JWT 생성
         String token = jwtProvider.generateToken(user.getId(), user.getStudentId());
