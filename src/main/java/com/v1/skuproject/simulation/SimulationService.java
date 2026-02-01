@@ -97,16 +97,13 @@ public class SimulationService {
 
         if (elapsedSec <= 60) {
             count = random(30, 40);
-        } else if (elapsedSec <= 180) {
+        } else if (elapsedSec <= 1200) {
             count = random(20, 25);
-        } else if (elapsedSec <= 600) {
+        } else if (elapsedSec <= 1800) {
             count = random(10, 15);
-        }  else if (elapsedSec <= 1200) {
+        }  else {
            count = random(5, 8);
-        } else {
-            count = random(1, 3);
         }
-
 
 
         List<DummyUser> users = createDummyUsers(count);
