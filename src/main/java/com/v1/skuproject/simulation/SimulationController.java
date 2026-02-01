@@ -35,6 +35,9 @@ public class SimulationController {
         log.info("수강신청 초기화 시작");
 
         enrollmentService.resetEnrollmentStatuses();
+         simulationService.stopSimulation();    // 시뮬레이션 종료
+        simulationService.shutdownScheduler(); // 스레드 풀 완전 종료
+        simulationService.createScheduler();
         queueService.clearAllQueues();
         enrollmentService.resetLectureCounts();
 

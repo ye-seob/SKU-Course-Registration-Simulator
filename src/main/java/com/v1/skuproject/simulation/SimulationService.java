@@ -27,15 +27,11 @@ public class SimulationService {
     private final LectureRepository lectureRepository;
     private final StringRedisTemplate redisTemplate;
     private final LectureRankingService lectureRankingService;
-
-    private final ScheduledExecutorService scheduler =
-            Executors.newScheduledThreadPool(10);
-
     /**
      long이면 동시성 문제 발생 가능
      */
     private final AtomicLong userIdSeq = new AtomicLong(0);
-
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
     /**
      boolean이면 동시성 문제 발생 가능
      */
@@ -48,6 +44,12 @@ public class SimulationService {
             log.warn("이미 시뮬레이션이 실행 중입니다.");
             return;
         }
+
+        if (scheduler.isShutdown()) {
+            createScheduler(); // 스레드  생성
+        }
+
+
 
         isRunning = true;
         simulationStartTime = System.currentTimeMillis();
@@ -63,9 +65,30 @@ public class SimulationService {
         scheduler.schedule(this::stopSimulation, 20, TimeUnit.MINUTES);
     }
 
+    public void createScheduler() {
+        scheduler = Executors.newScheduledThreadPool(10);
+        log.info("새 스레줄러 생성 완료");
+    }
+
+
+
     public void stopSimulation() {
         isRunning = false;
         log.info("=== 시뮬레이션 종료 ===");
+    }
+
+    public void shutdownScheduler() {
+        log.info("스레줄러 종료 시작");
+        scheduler.shutdown();
+        try {
+            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            scheduler.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+        log.info("스레줄러 종료 완료");
     }
 
     /**
@@ -104,7 +127,7 @@ public class SimulationService {
         }  else {
            count = random(5, 8);
         }
-
+        log.info("초당 유입: {}", count);
 
         List<DummyUser> users = createDummyUsers(count);
 
