@@ -34,7 +34,30 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatus()).body(response);
     }
 
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Object>> handleHttpMessageNotReadable(
+            org.springframework.http.converter.HttpMessageNotReadableException ex
+    ) {
+        String message = "요청 형식이 올바르지 않습니다.";
 
+        Throwable cause = ex.getMostSpecificCause();
+        if (cause instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException ife) {
+            if (ife.getTargetType() == Integer.class || ife.getTargetType() == int.class) {
+                message = "숫자를 입력해 주세요.";
+            }
+        }
+
+        ApiResponse<Object> response = ApiResponse.<Object>builder()
+                .success(false)
+                .data(null)
+                .code("INVALID_REQUEST")
+                .message(message)
+                .build();
+
+        log.warn("요청 파싱 오류 message={}", message);
+
+        return ResponseEntity.badRequest().body(response);
+    }
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
