@@ -127,8 +127,7 @@ public class SimulationService {
         }  else {
            count = random(5, 8);
         }
-        log.info("초당 유입: {}", count);
-
+        
         List<DummyUser> users = createDummyUsers(count);
 
         for (DummyUser user : users) {
