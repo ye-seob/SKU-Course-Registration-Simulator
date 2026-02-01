@@ -22,7 +22,7 @@ spring:
 lecture:
   operation:
     start-hour: 8
-    end-hour: 18
+    end-hour: 22
 
 
 cors:
