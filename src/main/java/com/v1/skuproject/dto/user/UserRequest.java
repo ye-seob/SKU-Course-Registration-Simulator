@@ -31,6 +31,7 @@ public class UserRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Login {
-        private int studentId;
+        private long studentId;
+        private String loginMode;
     }
 }

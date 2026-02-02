@@ -20,7 +20,7 @@ public class User {
     private Long id;
 
     @Column(name = "student_id", nullable = false, unique = true)
-    private int studentId;
+    private long studentId;
 
     @Column(nullable = false)
     private String name;

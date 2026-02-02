@@ -47,7 +47,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDto login(UserRequest.Login request) {
 
-        timeChecker.validateLogin();
+        if(request.getLoginMode().equals("ENROLL")){
+            timeChecker.validateLogin();
+        }
+
 
         User user = userRepository.findByStudentId(request.getStudentId())
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));

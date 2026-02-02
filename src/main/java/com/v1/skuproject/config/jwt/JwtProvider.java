@@ -33,7 +33,7 @@ public class JwtProvider {
     /**
        Access Token 생성
      */
-    public String generateToken(Long userId, int studentId) {
+    public String generateToken(Long userId, long studentId) {
         return Jwts.builder()
                 .claim("userId", userId)
                 .claim("studentId", studentId)

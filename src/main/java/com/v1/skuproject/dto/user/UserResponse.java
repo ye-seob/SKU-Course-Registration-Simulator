@@ -13,7 +13,7 @@ public class UserResponse {
     @ToString
     public static class UserDto {
         private Long id;
-        private int studentId;
+        private long studentId;
         private String name;
 
         private Major major;               // 주전공
