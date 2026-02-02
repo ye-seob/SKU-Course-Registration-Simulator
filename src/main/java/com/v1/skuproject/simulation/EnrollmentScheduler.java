@@ -35,9 +35,13 @@ public class EnrollmentScheduler {
 
         simulationService.stopSimulation();
 
-        enrollmentService.resetEnrollmentStatuses(); // 신청 내역 초기화
-        queueService.clearAllQueues();               // 대기열 초기화
-        enrollmentService.resetLectureCounts();      // 신청 인원 초기화
+
+        enrollmentService.resetEnrollmentStatuses();
+        simulationService.stopSimulation();
+        simulationService.shutdownScheduler();
+        simulationService.createScheduler();
+        queueService.clearAllQueues();
+        enrollmentService.resetLectureCounts();
 
         log.info("수강신청 종료 완료");
     }
