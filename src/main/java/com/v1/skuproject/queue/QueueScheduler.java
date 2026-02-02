@@ -32,7 +32,7 @@ public class QueueScheduler {
     @Scheduled(fixedDelay = 1000)
     public void processQueue() {
 
-        int processCount = ThreadLocalRandom.current().nextInt(10, 50);
+        int processCount = ThreadLocalRandom.current().nextInt(20, 60);
 
         Set<String> values = redisTemplate.opsForZSet()
                 .range("enrollment:queue", 0, processCount - 1);
