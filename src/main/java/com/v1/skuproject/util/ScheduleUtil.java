@@ -22,22 +22,29 @@ public class ScheduleUtil {
         Map<String, List<String>> s2 = parse(schedule2Json);
 
         for (String day : s1.keySet()) {
-            if (s2.containsKey(day)) {
-                List<String> range1 = s1.get(day);
-                List<String> range2 = s2.get(day);
+            if (!s2.containsKey(day)) continue;
 
-                int start1 = Integer.parseInt(range1.get(0));
-                int end1 = Integer.parseInt(range1.get(1));
+            List<String> times1 = s1.get(day);
+            List<String> times2 = s2.get(day);
 
-                int start2 = Integer.parseInt(range2.get(0));
-                int end2 = Integer.parseInt(range2.get(1));
+            List<Integer> t1 = times1.stream().map(Integer::parseInt).toList();
+            List<Integer> t2 = times2.stream().map(Integer::parseInt).toList();
 
-                // 범위 겹침 체크
-                if (start1 <= end2 && start2 <= end1) {
-                    return true; // 겹침 o
+            for (int i = 0; i < t1.size(); i += 2) {
+                int start1 = t1.get(i);
+                int end1 = (i + 1 < t1.size()) ? t1.get(i + 1) : start1;
+
+                for (int j = 0; j < t2.size(); j += 2) {
+                    int start2 = t2.get(j);
+                    int end2 = (j + 1 < t2.size()) ? t2.get(j + 1) : start2;
+
+                    if (start1 <= end2 && start2 <= end1) {
+                        return true;
+                    }
                 }
             }
         }
-        return false; // 겹침 x
+
+        return false; // 충돌 없음
     }
 }
