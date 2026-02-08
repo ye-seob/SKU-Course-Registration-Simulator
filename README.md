@@ -13,35 +13,39 @@
 
 - 프로젝트 소개
 - 프로젝트 화면 구성 
-- 프로젝트 API 설계
+- 프로젝트 API 설계 및 ERD
 - 사용한 기술 스택
 - 프로젝트 아키텍쳐
-- 기술적 이슈와 해결 과정
+- 트러블슈팅 + 회고록
 - 프로젝트 팀원
 
 <br />
 
 ### 화면 구성
-|로그인|회원가입|
+#### 로그인 / 회원가입
+| 로그인 | 회원가입 |
 |:---:|:---:|
-|<img src="" width="400"/>|<img src="" width="400"/>|
-### 
-|수강 신청 리스트|장바구니 리스트|
+| <img width="500" height="300" alt="로그인" src="https://github.com/user-attachments/assets/03c7ee75-463c-4d85-a40b-6a992b1078f9" /> | <img width="500" height="300" alt="회원가입" src="https://github.com/user-attachments/assets/0206487a-0d5e-4eeb-a1b0-e6131e8f4f96" /> |
+
+#### 수강 신청 리스트 / 장바구니
+| 수강 신청 리스트 | 장바구니 |
 |:---:|:---:|
-|<img src="" width="400"/>|<img src="" width="400"/>|
-### 
-|수강 신청 대기열|강의 평점|
+| <img width="500" height="300" alt="강의 리스트" src="https://github.com/user-attachments/assets/62413e26-42d0-4e87-96f7-dc81e8682b81" /> | <img width="500" height="300" alt="장바구니" src="https://github.com/user-attachments/assets/f54f26dd-b0b4-4c53-84b3-bf203cfdbf9a" /> |
+
+#### 수강 신청 대기열 / 강의 평점
+| 수강 신청 대기열 | 강의 평점 |
 |:---:|:---:|
-|<img src="" width="400"/>|<img src="" width="400"/>|
-
-
-
+| <img width="500" height="300" alt="대기열" src="https://github.com/user-attachments/assets/01e8c1b6-eb3a-4521-b082-3bde8ce99bcf" /> | <img width="500" height="300" alt="평점" src="https://github.com/user-attachments/assets/59e020a1-f00e-4f64-b7ef-ea583b5b5864"/> |
 <br />
 
-## 🗂️ APIs
-작성한 API는 아래에서 확인할 수 있습니다.
+## 🗂️ API
 
-👉🏻 [API ]("여기 링크")
+![IMG_0697](https://github.com/user-attachments/assets/00a6dfb3-e0f3-4263-b72b-ae9cd2ac0050)
+![IMG_0696](https://github.com/user-attachments/assets/054ecb6d-feb0-4a1e-993b-05d95563dd10)
+
+## ERD
+<img width="1693" height="974" alt="다운로드 (1)" src="https://github.com/user-attachments/assets/9a6c8ba7-8da1-4d52-af38-5a82c2177223" />
+
 
 
 <br />
@@ -80,12 +84,12 @@
 
 <br />
 
-## 🤔 기술적 이슈와 해결 과정
+## 🤔 트러블 슈팅 + 회고록
 - 어떻게 해야 사용자가 독립된 환경에서 수강신청 할 수 있을까
     - [Room 개념 도입]("여기에 링크 추가")
 - Room 개념의 한계
     - [정각 초기화 방식 도입]("여기에 링크 추가")
-
+- 모의 수강신청을 배포하고 나서
 
 <br />
 
