@@ -2,6 +2,7 @@ package com.v1.skuproject.controller;
 
 import com.v1.skuproject.common.response.ApiResponse;
 import com.v1.skuproject.common.response.ResponseHandler;
+import com.v1.skuproject.config.security.UserPrincipal;
 import com.v1.skuproject.domain.lecture.LectureType;
 import com.v1.skuproject.domain.user.Major;
 import com.v1.skuproject.dto.lecture.LectureResponse;
@@ -11,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,12 +52,11 @@ public class LectureController {
     )
     @PostMapping("/{lectureId}/rating")
     public ResponseEntity<ApiResponse<String>> rateLecture(
-            Authentication authentication,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable(name = "lectureId") Long lectureId,
             @RequestParam(name = "score") int score
     ) {
-        Long userId = (Long) authentication.getPrincipal();
-
+        Long userId = principal.getUserId();
         log.info(
                 "강의 평점 등록 요청 userId={} lectureId={} score={}",
                 userId, lectureId, score

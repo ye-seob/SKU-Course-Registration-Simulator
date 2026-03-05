@@ -2,6 +2,7 @@ package com.v1.skuproject.controller;
 
 import com.v1.skuproject.common.response.ApiResponse;
 import com.v1.skuproject.common.response.ResponseHandler;
+import com.v1.skuproject.config.security.UserPrincipal;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,7 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,10 +28,9 @@ public class UserController {
     @Operation(summary = "내 정보 조회")
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserDto>> getUser(
-            Authentication authentication
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        Long userId = (Long) authentication.getPrincipal();
-
+        Long userId = principal.getUserId();
         log.info("내 정보 조회 요청 userId={}", userId);
 
         UserDto response = userService.getUserById(userId);
@@ -41,10 +41,9 @@ public class UserController {
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping("/me")
     public ResponseEntity<ApiResponse<String>> deleteUser(
-            Authentication authentication
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        Long userId = (Long) authentication.getPrincipal();
-
+        Long userId = principal.getUserId();
         log.info("회원 탈퇴 요청 userId={}", userId);
 
         userService.deleteUserById(userId);
