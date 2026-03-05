@@ -52,6 +52,8 @@ public class Security {
                                 "/topic/**",
                                 "/queue/**"
                         ).permitAll()
+                        // 평점은 USER만
+                        .requestMatchers("/api/v1/lectures/*/rating").hasRole("USER")
 
                         // 강의 조회는 누구나
                         .requestMatchers("/api/v1/lectures/**").permitAll()
@@ -59,9 +61,6 @@ public class Security {
                         // 장바구니는 USER만
                         .requestMatchers("/api/v1/cart/add").hasRole("USER")
                         .requestMatchers("/api/v1/cart/delete/**").hasRole("USER")
-
-                        // 평점은 USER만
-                        .requestMatchers("/api/v1/lectures/*/rating").hasRole("USER")
 
                         // 수강신청은 로그인만 하면 가능
                         .requestMatchers("/api/v1/enrollments/**").authenticated()
