@@ -1,5 +1,6 @@
 package com.v1.skuproject.queue;
 
+import com.v1.skuproject.config.security.UserPrincipal;
 import com.v1.skuproject.dto.queue.QueueRankResponse;
 import com.v1.skuproject.dto.queue.QueueResultResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,9 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-
-import java.security.Principal;
 
 @Slf4j
 @Controller
@@ -24,20 +24,10 @@ public class QueueWebSocketController {
     @MessageMapping("/enter/{lectureId}")
     public void enterQueue(
             @DestinationVariable("lectureId") Long lectureId,
-            Principal principal
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        if (principal == null) {
-            log.warn("WS 대기열 진입 실패 - 인증 정보 없음");
-            return;
-        }
 
-        Long userId;
-        try {
-            userId = Long.valueOf(principal.getName());
-        } catch (NumberFormatException e) {
-            log.warn("WS 대기열 진입 실패 - userId 파싱 오류 value={}", principal.getName());
-            return;
-        }
+        Long userId = principal.getUserId();
 
         try {
             // 대기열 등록
