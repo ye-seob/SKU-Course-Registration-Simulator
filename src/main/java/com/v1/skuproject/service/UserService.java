@@ -37,6 +37,7 @@ public class UserService {
                 .studentId(request.getStudentId())
                 .name(request.getName())
                 .grade(request.getGrade())
+                .role(Role.ROLE_USER)
                 .major(request.getMajor())
                 .build();
 
