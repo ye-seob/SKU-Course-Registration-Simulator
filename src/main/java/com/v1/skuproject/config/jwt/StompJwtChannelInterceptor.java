@@ -1,5 +1,6 @@
 package com.v1.skuproject.config.jwt;
 
+import lombok.AllArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -10,23 +11,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class StompJwtChannelInterceptor implements ChannelInterceptor {
 
     private final JwtProvider jwtProvider;
-
-    public StompJwtChannelInterceptor(JwtProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
-    }
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         StompHeaderAccessor accessor =
                 MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-
-        if (accessor == null) {
-            return message;
-        }
 
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             String authorization = accessor.getFirstNativeHeader("Authorization");
