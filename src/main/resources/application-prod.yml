@@ -23,6 +23,7 @@ lecture:
   operation:
     start-hour: 8
     end-hour: 22
+    start-minute: 50
 
 
 cors:
