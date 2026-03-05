@@ -9,8 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+
+import java.security.Principal;
 
 @Slf4j
 @Controller
@@ -24,10 +26,12 @@ public class QueueWebSocketController {
     @MessageMapping("/enter/{lectureId}")
     public void enterQueue(
             @DestinationVariable("lectureId") Long lectureId,
-            @AuthenticationPrincipal UserPrincipal principal
+            Principal principal
     ) {
+        Authentication authentication = (Authentication) principal;
+        UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
 
-        Long userId = principal.getUserId();
+        Long userId = user.getUserId();
 
         try {
             // 대기열 등록
