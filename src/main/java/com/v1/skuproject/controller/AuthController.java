@@ -2,6 +2,7 @@ package com.v1.skuproject.controller;
 
 import com.v1.skuproject.common.response.ApiResponse;
 import com.v1.skuproject.common.response.ResponseHandler;
+import com.v1.skuproject.dto.user.UserRequest.GuestLoginRequest;
 import com.v1.skuproject.dto.user.UserRequest.Login;
 import com.v1.skuproject.dto.user.UserRequest.SignUp;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
@@ -40,6 +41,15 @@ public class AuthController {
     public ResponseEntity<ApiResponse<UserDto>> login(@Valid @RequestBody Login request) {
 
         UserDto response = userService.login(request);
+
+        return ResponseHandler.ok(response);
+    }
+
+    @Operation(summary = "게스트 로그인")
+    @PostMapping("/guest")
+    public ResponseEntity<ApiResponse<UserDto>> guestLogin(@Valid @RequestBody GuestLoginRequest request) {
+
+        UserDto response = userService.guestLogin(request);
 
         return ResponseHandler.ok(response);
     }

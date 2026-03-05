@@ -15,7 +15,7 @@ public class UserRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SignUp {
-        private int studentId;
+        private String studentId;
 
         @NotBlank(message = "이름을 입력해 주세요.")
         private String name;
@@ -31,7 +31,13 @@ public class UserRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Login {
-        private long studentId;
+        private String studentId;
         private String loginMode;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public  static  class GuestLoginRequest {
+        private Major major;
     }
 }

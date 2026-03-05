@@ -3,8 +3,11 @@ package com.v1.skuproject.service;
 import com.v1.skuproject.common.exception.BaseException;
 import com.v1.skuproject.common.exception.ErrorCode;
 import com.v1.skuproject.config.jwt.JwtProvider;
+import com.v1.skuproject.domain.user.Role;
 import com.v1.skuproject.domain.user.User;
-import com.v1.skuproject.dto.user.UserRequest;
+import com.v1.skuproject.dto.user.UserRequest.GuestLoginRequest;
+import com.v1.skuproject.dto.user.UserRequest.Login;
+import com.v1.skuproject.dto.user.UserRequest.SignUp;
 import com.v1.skuproject.dto.user.UserResponse.UserDto;
 import com.v1.skuproject.repository.UserRepository;
 import com.v1.skuproject.util.TimeChecker;
@@ -24,7 +27,7 @@ public class UserService {
     private final TimeChecker timeChecker;
 
     @Transactional
-    public Long createUser(UserRequest.SignUp request){
+    public Long createUser(SignUp request){
 
         if(userRepository.existsByStudentId(request.getStudentId())){
             throw new BaseException(ErrorCode.USER_ALREADY_EXISTS);
@@ -45,25 +48,44 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDto login(UserRequest.Login request) {
+    public UserDto login(Login request) {
 
         if(request.getLoginMode().equals("ENROLL")){
             timeChecker.validateLogin();
         }
 
-
         User user = userRepository.findByStudentId(request.getStudentId())
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
-
         // JWT 생성
-        String token = jwtProvider.generateToken(user.getId(), user.getStudentId());
+        String token = jwtProvider.generateToken(user.getId(), user.getStudentId(),user.getRole());
 
         UserDto userDto = UserDto.from(user, token);
 
         log.info("로그인 성공 userId={}", user.getId());
 
         return userDto;
+    }
+
+    @Transactional
+    public UserDto guestLogin(GuestLoginRequest request) {
+        User guest = User.builder()
+                .studentId("guest-" + System.currentTimeMillis())
+                .name("비회원")
+                .major(request.getMajor())
+                .grade(1)
+                .role(Role.ROLE_GUEST)
+                .build();
+
+        userRepository.save(guest);
+
+        String token = jwtProvider.generateToken(
+                guest.getId(),
+                guest.getStudentId(),
+                guest.getRole()
+        );
+
+        return UserDto.from(guest, token);
     }
 
     @Transactional(readOnly = true)
