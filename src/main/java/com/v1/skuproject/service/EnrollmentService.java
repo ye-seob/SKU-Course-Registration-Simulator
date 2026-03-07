@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -173,5 +174,14 @@ public class EnrollmentService {
     public void resetLectureCounts() {
         lectureRepository.findAll().forEach(Lecture::resetEnrolledCount);
         log.info("강의 신청 인원 초기화 완료");
+    }
+    @Transactional
+    public void deleteGuestEnrollment() {
+
+        LocalDateTime time = LocalDateTime.now().minusHours(1);
+
+        int deleted =  enrollmentRepository.deleteGuestEnrollments(time);
+
+        log.info("삭제된 비회원 유저의 수강 신청 내역 = {}",deleted);
     }
 }

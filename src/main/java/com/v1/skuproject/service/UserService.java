@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -109,5 +111,15 @@ public class UserService {
         userRepository.delete(user);
 
         log.info("회원 삭제 성공  userId: {}", userId);
+    }
+
+    @Transactional
+    public void deleteGuestUsers() {
+
+        LocalDateTime time = LocalDateTime.now().minusHours(1);
+
+        int deleted = userRepository.deleteGuestUsers(time);
+
+        log.info("삭제된 비회원 유저 = {}",deleted);
     }
 }

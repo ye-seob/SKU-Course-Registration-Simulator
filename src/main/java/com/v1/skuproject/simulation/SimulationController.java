@@ -3,8 +3,10 @@ package com.v1.skuproject.simulation;
 import com.v1.skuproject.queue.QueueService;
 import com.v1.skuproject.service.EnrollmentService;
 import com.v1.skuproject.service.LectureRankingService;
+import com.v1.skuproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +24,7 @@ public class SimulationController {
     private final EnrollmentService enrollmentService;
     private final QueueService queueService;
     private final LectureRankingService lectureRankingService;
+    private final UserService userService;
 
 
     @PostMapping("/start")
@@ -44,5 +47,16 @@ public class SimulationController {
         lectureRankingService.buildRanking();
 
         log.info("수강신청 초기화 완료");
+    }
+
+    @DeleteMapping("/guest")
+    public void deleteGuestUser() {
+        log.info("1시간이 지난 비회원 유저 삭제 시작");
+
+        enrollmentService.deleteGuestEnrollment();
+
+        userService.deleteGuestUsers();
+
+        log.info("1시간이 지난 비회원 유저 삭제 완료");
     }
 }
