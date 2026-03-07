@@ -18,6 +18,10 @@ public class TimeChecker {
     @Value("${lecture.operation.end-hour}")
     private int endHour;
 
+    @Value("${lecture.operation.start-minute}")
+    private int startMinute;
+
+
     public void validateEnrollment() {
         LocalTime now = LocalTime.now();
         int hour = now.getHour();
@@ -31,7 +35,7 @@ public class TimeChecker {
             throw new BaseException(ErrorCode.ENROLLMENT_TIME_INVALID);
         }
 
-        if (minute >= 50) {
+        if (minute >= startMinute) {
             log.warn(
                     "[수강신청 차단] 현재 시각: {}",
                     now
@@ -46,7 +50,7 @@ public class TimeChecker {
         int minute = now.getMinute();
 
         // 50분 ~ 59분 59초 59 로그인 차단
-        if (minute >= 50) {
+        if (minute >= startMinute) {
             log.warn(
                     "[로그인 차단] 현재 시각: {}",
                     now

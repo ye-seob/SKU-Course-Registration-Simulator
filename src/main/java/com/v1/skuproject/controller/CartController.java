@@ -4,6 +4,7 @@ import com.v1.skuproject.common.exception.BaseException;
 import com.v1.skuproject.common.exception.ErrorCode;
 import com.v1.skuproject.common.response.ApiResponse;
 import com.v1.skuproject.common.response.ResponseHandler;
+import com.v1.skuproject.config.security.UserPrincipal;
 import com.v1.skuproject.domain.cart.CartLecture;
 import com.v1.skuproject.dto.lecture.CartLectureResponse;
 import com.v1.skuproject.service.CartService;
@@ -12,7 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,10 +31,11 @@ public class CartController {
     @Operation(summary = "장바구니 담기")
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<CartLectureResponse>> addLectureToCart(
-            Authentication authentication,
+            @AuthenticationPrincipal UserPrincipal principal,
             @RequestBody Map<String, Long> body
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+
+        Long userId = principal.getUserId();
         Long lectureId = body.get("lectureId");
 
         if (lectureId == null) {
@@ -52,10 +54,10 @@ public class CartController {
     @Operation(summary = "장바구니 취소")
     @DeleteMapping("/delete/{lectureId}")
     public ResponseEntity<ApiResponse<String>> removeLectureFromCart(
-            Authentication authentication,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long lectureId
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+        Long userId = principal.getUserId();
 
         log.info("장바구니 삭제 요청 userId={} lectureId={}", userId, lectureId);
 
@@ -69,9 +71,10 @@ public class CartController {
     @Operation(summary = "장바구니 조회")
     @GetMapping
     public ResponseEntity<ApiResponse<List<CartLectureResponse>>> getCartLectures(
-            Authentication authentication
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+
+        Long userId = principal.getUserId();
 
         log.info("장바구니 조회 요청 userId={}", userId);
 

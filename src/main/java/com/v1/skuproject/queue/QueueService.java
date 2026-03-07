@@ -1,18 +1,18 @@
 package com.v1.skuproject.queue;
 
+import com.v1.skuproject.config.security.UserPrincipal;
 import com.v1.skuproject.dto.queue.QueueRankResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.security.Principal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -142,22 +142,17 @@ public class QueueService {
      * WebSocket 연결 종료 시 자동 호출
      */
     @EventListener
-    public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
-        StompHeaderAccessor accessor =
-                StompHeaderAccessor.wrap(event.getMessage());
+    public void handleDisconnect(SessionDisconnectEvent event) {
 
-        Principal principal = accessor.getUser();
-        if (principal == null) {
-            return;
-        }
+        Authentication authentication =
+                (Authentication) event.getUser();
 
-        Long userId;
-        try {
-            userId = Long.valueOf(principal.getName());
-        } catch (NumberFormatException e) {
-            log.warn("WS 종료 - userId 파싱 실패 value={}", principal.getName());
-            return;
-        }
+        if (authentication == null) return;
+
+        UserPrincipal principal =
+                (UserPrincipal) authentication.getPrincipal();
+
+        Long userId = principal.getUserId();
 
         Long lectureId = subscribers.get(userId);
         if (lectureId == null) {

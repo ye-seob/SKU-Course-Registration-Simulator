@@ -33,18 +33,39 @@ public class Security {
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+
+                        // 로그인 & 회원가입 & Guest 로그인
                         .requestMatchers(
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/signup",
+                                "/api/v1/auth/guest",
+                                "api/v1/simulation/**"
+                        ).permitAll()
+
+                        // Swagger & WS
+                        .requestMatchers(
                                 "/swagger-ui/**",
-                                "/ws/**",
                                 "/v3/api-docs/**",
+                                "/ws/**",
                                 "/app/**",
                                 "/user/**",
                                 "/topic/**",
-                                "/queue/**",
-                                "/api/v1/simulation/**"
+                                "/queue/**"
                         ).permitAll()
+                        // 평점은 USER만
+                        .requestMatchers("/api/v1/lectures/*/rating").hasRole("USER")
+
+                        // 강의 조회는 누구나
+                        .requestMatchers("/api/v1/lectures/**").permitAll()
+
+                        // 장바구니는 USER만
+                        .requestMatchers("/api/v1/cart/add").hasRole("USER")
+                        .requestMatchers("/api/v1/cart/delete/**").hasRole("USER")
+
+                        // 수강신청은 로그인만 하면 가능
+                        .requestMatchers("/api/v1/enrollments/**").authenticated()
+
+                        // 나머지
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

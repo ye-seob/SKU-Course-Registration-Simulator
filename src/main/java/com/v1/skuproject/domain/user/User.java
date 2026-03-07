@@ -20,17 +20,15 @@ public class User {
     private Long id;
 
     @Column(name = "student_id", nullable = false, unique = true)
-    private long studentId;
+    private String studentId;
 
     @Column(nullable = false)
     private String name;
-;
 
     //학과
     @Column(unique = false, nullable = false)
     @Enumerated(EnumType.STRING)
     private  Major major;
-
 
     // 학년
     @Column(nullable = false)
@@ -39,6 +37,14 @@ public class User {
     // 최대 신청 가능 학점
     @Column(name = "max_credit" ,nullable = false)
     private int maxCredit;
+
+    // 최소 신청 가능 학점
+    @Column(name = "min_credit" ,nullable = false)
+    private int minCredit;
+
+    @Column(name = "role" , nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
