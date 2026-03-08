@@ -9,3 +9,6 @@ jwt:
 
 springdoc:
   override-with-generic-response: false
+
+enrollment:
+  max-courses: 10
