@@ -3,10 +3,7 @@
 
     <!-- ================= 공통 ================= -->
     <property name="CONSOLE_PATTERN"
-              value="%d{HH:mm:ss.SSS} %highlight(%-5level) traceId=%X{traceId:-NO_TRACE} [%thread] %cyan(%logger{40}) - %msg%n"/>
-
-    <property name="FILE_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level traceId=%X{traceId:-NO_TRACE} %logger - %msg%n"/>
+              value="%d{HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{40}) - %msg%n"/>
 
     <!-- ================= 콘솔 ================= -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
