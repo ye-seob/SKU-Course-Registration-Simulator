@@ -1,5 +1,7 @@
 package com.v1.skuproject.domain.lecture;
 
+import com.v1.skuproject.common.exception.BaseException;
+import com.v1.skuproject.common.exception.ErrorCode;
 import com.v1.skuproject.domain.user.Major;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,11 +50,11 @@ public class Lecture {
 
     // 정원
     @Column(nullable = false)
-    private Integer capacity;
+    private int capacity;
 
     // 현재 수강신청한 인원
     @Column(nullable = false)
-    private Integer enrollment;
+    private int enrollment;
 
     // 강의 평점
     @Column(nullable = false)
@@ -82,16 +84,18 @@ public class Lecture {
     private List<LectureRating> ratings = new ArrayList<>();
 
 
-    public void incrementEnrollment() {
-        if (this.enrollment < this.capacity) {
-            this.enrollment += 1;
+    public void enroll() {
+        if (this.enrollment >= this.capacity) {
+            throw new BaseException(ErrorCode.ENROLLMENT_CAPACITY_EXCEEDED);
         }
+        this.enrollment += 1;
     }
 
-    public void decrementEnrollment() {
-        if (this.enrollment > 0) {
-            this.enrollment -= 1;
+    public void cancel() {
+        if (this.enrollment <= 0) {
+            throw new BaseException(ErrorCode.ENROLLMENT_INVALID_CANCEL);
         }
+        this.enrollment -= 1;
     }
 
     public void resetEnrolledCount() {

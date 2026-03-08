@@ -1,7 +1,6 @@
 package com.v1.skuproject.repository;
 
 import com.v1.skuproject.domain.enrollment.Enrollment;
-import com.v1.skuproject.domain.enrollment.EnrollmentStatus;
 import com.v1.skuproject.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,7 +16,7 @@ import java.util.Optional;
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
 
-    List<Enrollment> findAllByUserAndStatus(User user, EnrollmentStatus status);
+    List<Enrollment> findAllByUser(User user);
 
     Optional<Enrollment> findByUser_IdAndLecture_Id(Long userId, Long lectureId);
 
