@@ -1,7 +1,6 @@
 package com.v1.skuproject.dto.enrollment;
 
 import com.v1.skuproject.domain.enrollment.Enrollment;
-import com.v1.skuproject.domain.enrollment.EnrollmentStatus;
 import com.v1.skuproject.domain.lecture.Lecture;
 import com.v1.skuproject.domain.lecture.LectureType;
 import com.v1.skuproject.domain.user.Major;
@@ -13,9 +12,6 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class EnrollmentResponse {
-    // 수강신청 상태
-    private EnrollmentStatus status; // SUCCESS, FAIL, PENDING
-    private String reason;           // 실패 사유
     private LocalDateTime createdAt; // 신청 시각
 
     // 강의 정보
@@ -41,8 +37,6 @@ public class EnrollmentResponse {
         Lecture l = e.getLecture();
 
         return EnrollmentResponse.builder()
-                .status(e.getStatus())
-                .reason(null)
                 .createdAt(e.getCreatedAt())
                 .lectureId(l.getId())
                 .lectureName(l.getLectureName())
