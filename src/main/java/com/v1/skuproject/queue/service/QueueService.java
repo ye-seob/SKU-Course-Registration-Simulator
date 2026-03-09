@@ -1,7 +1,11 @@
 package com.v1.skuproject.queue.service;
 
+import com.v1.skuproject.common.exception.BaseException;
+import com.v1.skuproject.common.exception.ErrorCode;
 import com.v1.skuproject.config.security.UserPrincipal;
+import com.v1.skuproject.enrollment.service.EnrollmentService;
 import com.v1.skuproject.queue.dto.QueueRankResponse;
+import com.v1.skuproject.queue.dto.QueueResultResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -14,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @EnableScheduling
@@ -29,6 +35,7 @@ public class QueueService {
 
     private final StringRedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
+    private final EnrollmentService enrollmentService;
 
     /**
      * WS 구독자 관리
@@ -219,5 +226,90 @@ public class QueueService {
         }
 
         log.info("대기열 전체 초기화 완료");
+    }
+
+    public void processQueue(){
+
+        int processCount = ThreadLocalRandom.current().nextInt(20, 60);
+
+        Set<String> values = redisTemplate.opsForZSet()
+                .range("enrollment:queue", 0, processCount - 1);
+
+        if (values == null || values.isEmpty()) {
+            return;
+        }
+
+
+        for (String value : values) {
+            if (value == null) {
+                continue;
+            }
+
+            String[] data = value.split(":");
+            Long userId = Long.parseLong(data[0]);
+            Long lectureId = Long.parseLong(data[1]);
+
+            // 더미 유저 처리
+            if (userId >= 100_000L) {
+                enrollmentService.enrollDummy(lectureId);
+                exit(userId, lectureId);
+                continue;
+            }
+
+            try {
+                enrollmentService.enroll(userId, lectureId);
+
+                messagingTemplate.convertAndSendToUser(
+                        userId.toString(),
+                        "/queue-end",
+                        QueueResultResponse.builder()
+                                .status("SUCCESS")
+                                .message("수강신청이 완료되었습니다.")
+                                .build()
+                );
+
+                log.info(
+                        "수강신청 처리 성공 userId={} lectureId={}",
+                        userId, lectureId
+                );
+
+            } catch (BaseException e) {
+                ErrorCode errorCode = e.getErrorCode();
+
+                messagingTemplate.convertAndSendToUser(
+                        userId.toString(),
+                        "/queue-end",
+                        QueueResultResponse.builder()
+                                .status("FAIL")
+                                .message(errorCode.getMessage())
+                                .build()
+                );
+
+                log.warn(
+                        "수강신청 처리 실패 userId={} lectureId={} errorCode={}",
+                        userId, lectureId, errorCode.getCode()
+                );
+
+            } catch (Exception e) {
+
+                messagingTemplate.convertAndSendToUser(
+                        userId.toString(),
+                        "/queue-end",
+                        QueueResultResponse.builder()
+                                .status("FAIL")
+                                .message("시스템 오류로 수강신청에 실패했습니다.")
+                                .build()
+                );
+
+                log.error(
+                        "수강신청 처리 실패 userId={} lectureId={}",
+                        userId, lectureId, e
+                );
+
+            } finally {
+                // 대기열 및 구독 해제
+                exit(userId, lectureId);
+            }
+        }
     }
 }
