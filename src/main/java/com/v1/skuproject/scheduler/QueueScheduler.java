@@ -1,5 +1,6 @@
 package com.v1.skuproject.scheduler;
 
+import com.v1.skuproject.queue.service.QueueProcessor;
 import com.v1.skuproject.queue.service.QueueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,9 +14,15 @@ import org.springframework.stereotype.Component;
 public class QueueScheduler {
 
     private final QueueService queueService;
+    private final QueueProcessor queueProcessor;
 
     @Scheduled(fixedDelay = 1000)
     public void processQueue() {
-        queueService.processQueue();
+        queueProcessor.processQueue();
+    }
+
+    @Scheduled(fixedDelay = 1000)
+    public void pushQueueUpdate() {
+        queueService.pushQueueUpdate();
     }
 }

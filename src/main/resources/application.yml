@@ -12,3 +12,6 @@ springdoc:
 
 enrollment:
   max-courses: 10
+
+queue:
+  key: "enrollment:queue"
