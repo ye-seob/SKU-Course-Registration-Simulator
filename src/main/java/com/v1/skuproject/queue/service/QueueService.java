@@ -1,315 +1,101 @@
 package com.v1.skuproject.queue.service;
 
-import com.v1.skuproject.common.exception.BaseException;
-import com.v1.skuproject.common.exception.ErrorCode;
-import com.v1.skuproject.config.security.UserPrincipal;
-import com.v1.skuproject.enrollment.service.EnrollmentService;
 import com.v1.skuproject.queue.dto.QueueRankResponse;
-import com.v1.skuproject.queue.dto.QueueResultResponse;
+import com.v1.skuproject.queue.model.QueueEntry;
+import com.v1.skuproject.queue.notifier.QueueNotifier;
+import com.v1.skuproject.queue.repository.QueueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
-@EnableScheduling
 @Slf4j
 @RequiredArgsConstructor
 public class QueueService {
 
-    /**
-     * Redis ZSet에 저장될 대기열 키
-     */
-    private static final String QUEUE_KEY = "enrollment:queue";
+    private final QueueSubscriberService queueSubscriberService;
+    private final QueueRepository queueRepository;
+    private final QueueNotifier queueNotifier;
 
-    private final StringRedisTemplate redisTemplate;
-    private final SimpMessagingTemplate messagingTemplate;
-    private final EnrollmentService enrollmentService;
-
-    /**
-     * WS 구독자 관리
-     * key   : userId
-     * value : lectureId
-     */
-    private final Map<Long, Long> subscribers = new ConcurrentHashMap<>();
-
-    /**
-     * 1초마다 모든 구독자에게 현재 대기열 순번 Push
-     */
-    @Scheduled(fixedDelay = 1000)
-    public void pushQueueUpdate() {
-        for (Map.Entry<Long, Long> entry : subscribers.entrySet()) {
-            Long userId = entry.getKey();
-            Long lectureId = entry.getValue();
-
-            try {
-                QueueRankResponse rank = getRank(userId, lectureId);
-
-                messagingTemplate.convertAndSendToUser(
-                        userId.toString(),
-                        "/queue-rank",
-                        rank
-                );
-
-            } catch (IllegalStateException e) {
-                // 대기열 정보 불일치 등 문제
-                log.warn(
-                        "대기열 순번 조회 실패 userId={} lectureId={} 사유={}",
-                        userId, lectureId, e.getMessage()
-                );
-            } catch (Exception e) {
-                // Redis / WS 등 시스템 문제
-                log.error(
-                        "대기열 순번 전송 중 시스템 오류 userId={} lectureId={}",
-                        userId, lectureId, e
-                );
-            }
-        }
-    }
 
     /**
      * 대기열 등록
      */
     public void enter(Long userId, Long lectureId) {
-        String value = generateValue(userId, lectureId);
-        long now = System.currentTimeMillis();
 
-        try {
-            redisTemplate.opsForZSet()
-                    .add(QUEUE_KEY, value, (double) now);
+        String value = QueueEntry.of(userId, lectureId).encode();
 
-            subscribers.put(userId, lectureId);
-
-
-            // 즉시 한 번 알림 전송
-            notifyQueueUpdate();
-
-        } catch (Exception e) {
-            log.error(
-                    "대기열 등록 실패 userId={} lectureId={}",
-                    userId, lectureId, e
-            );
-            throw e;
+        if(queueRepository.rank(value) != null){
+            return;
         }
+
+        queueRepository.add(value, System.currentTimeMillis());
+
+        queueSubscriberService.subscribe(userId, lectureId);
+
+        queueNotifier.sendRank(userId, getRank(userId, lectureId));
+    }
+
+
+    /**
+     * 대기열 이탈
+     */
+    public void exit(Long userId, Long lectureId) {
+
+        String value = QueueEntry.of(userId, lectureId).encode();
+
+        queueRepository.remove(value);
+
+        queueSubscriberService.unsubscribe(userId);
     }
 
     /**
      * 현재 사용자의 대기열 순번 조회
      */
     public QueueRankResponse getRank(Long userId, Long lectureId) {
-        String value = generateValue(userId, lectureId);
 
-        Long rank = redisTemplate.opsForZSet().rank(QUEUE_KEY, value);
-        Long totalSize = redisTemplate.opsForZSet().zCard(QUEUE_KEY);
+        String value = QueueEntry.of(userId, lectureId).encode();
+
+        Long rank = queueRepository.rank(value);
+        Long totalSize = queueRepository.size();
+
 
         if (rank == null || totalSize == null) {
             throw new IllegalStateException("대기열 정보가 존재하지 않음");
         }
 
-        Long aheadCount = rank;
-        Long behindCount = totalSize - rank - 1;
 
         return QueueRankResponse.builder()
-                .aheadCount(aheadCount)
-                .behindCount(behindCount)
+                .aheadCount(rank)
+                .behindCount(totalSize - rank - 1)
                 .build();
     }
 
     /**
-     * 대기열 이탈
+     * 모든 구독자에게 현재 대기열 순번 Push
      */
-    public void exit(Long userId, Long lectureId) {
-        String value = generateValue(userId, lectureId);
-
-        try {
-            redisTemplate.opsForZSet().remove(QUEUE_KEY, value);
-            subscribers.remove(userId);
-
-
-        } catch (Exception e) {
-            log.error(
-                    "대기열 이탈 처리 실패 userId={} lectureId={}",
-                    userId, lectureId, e
-            );
-        }
-    }
-
-    /**
-     * WebSocket 연결 종료 시 자동 호출
-     */
-    @EventListener
-    public void handleDisconnect(SessionDisconnectEvent event) {
-
-        Authentication authentication =
-                (Authentication) event.getUser();
-
-        if (authentication == null) return;
-
-        UserPrincipal principal =
-                (UserPrincipal) authentication.getPrincipal();
-
-        Long userId = principal.getUserId();
-
-        Long lectureId = subscribers.get(userId);
-        if (lectureId == null) {
-            return;
-        }
-
-        String value = generateValue(userId, lectureId);
-
-        redisTemplate.opsForZSet().remove(QUEUE_KEY, value);
-        subscribers.remove(userId);
-
-        log.info(
-                "WS 종료로 인한 대기열 자동 이탈 userId={} lectureId={}",
-                userId, lectureId
-        );
-    }
-
-    /**
-     * Redis ZSet value 생성
-     * userId:lectureId
-     */
-    private String generateValue(Long userId, Long lectureId) {
-        return userId + ":" + lectureId;
-    }
-
-    /**
-     * 현재 모든 구독자에게 대기열 상태 즉시 전송
-     */
-    private void notifyQueueUpdate() {
-        for (Map.Entry<Long, Long> entry : subscribers.entrySet()) {
-            Long userId = entry.getKey();
-            Long lectureId = entry.getValue();
-
-            try {
-                QueueRankResponse rank = getRank(userId, lectureId);
-
-                messagingTemplate.convertAndSendToUser(
-                        userId.toString(),
-                        "/queue-rank",
-                        rank
-                );
-
-            } catch (Exception e) {
-                log.error(
-                        "대기열 즉시 알림 실패 userId={} lectureId={}",
-                        userId, lectureId, e
-                );
+    public void pushQueueUpdate() {
+        queueSubscriberService.getSubscribers().forEach((userId,lectureId)->{
+            try{
+                queueNotifier.sendRank(userId,getRank(userId,lectureId));
+            }catch (Exception e){
+                log.error("대기열 순번 전송 실패 userId={} , lectureId={}",userId,lectureId,e);
             }
-        }
+        });
     }
 
     /**
      * 대기열 전체 초기화
      */
     public void clearAllQueues() {
+
         log.info("대기열 전체 초기화 시작");
 
-        try {
-            redisTemplate.delete(QUEUE_KEY);
-            subscribers.clear();
-        } catch (Exception e) {
-            log.error("대기열 전체 초기화 실패", e);
-            throw e;
-        }
+        queueRepository.clear();
+        queueSubscriberService.clear();
 
         log.info("대기열 전체 초기화 완료");
     }
 
-    public void processQueue(){
 
-        int processCount = ThreadLocalRandom.current().nextInt(20, 60);
-
-        Set<String> values = redisTemplate.opsForZSet()
-                .range("enrollment:queue", 0, processCount - 1);
-
-        if (values == null || values.isEmpty()) {
-            return;
-        }
-
-
-        for (String value : values) {
-            if (value == null) {
-                continue;
-            }
-
-            String[] data = value.split(":");
-            Long userId = Long.parseLong(data[0]);
-            Long lectureId = Long.parseLong(data[1]);
-
-            // 더미 유저 처리
-            if (userId >= 100_000L) {
-                enrollmentService.enrollDummy(lectureId);
-                exit(userId, lectureId);
-                continue;
-            }
-
-            try {
-                enrollmentService.enroll(userId, lectureId);
-
-                messagingTemplate.convertAndSendToUser(
-                        userId.toString(),
-                        "/queue-end",
-                        QueueResultResponse.builder()
-                                .status("SUCCESS")
-                                .message("수강신청이 완료되었습니다.")
-                                .build()
-                );
-
-                log.info(
-                        "수강신청 처리 성공 userId={} lectureId={}",
-                        userId, lectureId
-                );
-
-            } catch (BaseException e) {
-                ErrorCode errorCode = e.getErrorCode();
-
-                messagingTemplate.convertAndSendToUser(
-                        userId.toString(),
-                        "/queue-end",
-                        QueueResultResponse.builder()
-                                .status("FAIL")
-                                .message(errorCode.getMessage())
-                                .build()
-                );
-
-                log.warn(
-                        "수강신청 처리 실패 userId={} lectureId={} errorCode={}",
-                        userId, lectureId, errorCode.getCode()
-                );
-
-            } catch (Exception e) {
-
-                messagingTemplate.convertAndSendToUser(
-                        userId.toString(),
-                        "/queue-end",
-                        QueueResultResponse.builder()
-                                .status("FAIL")
-                                .message("시스템 오류로 수강신청에 실패했습니다.")
-                                .build()
-                );
-
-                log.error(
-                        "수강신청 처리 실패 userId={} lectureId={}",
-                        userId, lectureId, e
-                );
-
-            } finally {
-                // 대기열 및 구독 해제
-                exit(userId, lectureId);
-            }
-        }
-    }
 }
