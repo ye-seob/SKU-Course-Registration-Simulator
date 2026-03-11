@@ -29,11 +29,6 @@ public class LectureRankingService {
                 .sorted(Comparator.comparingDouble(this::getScore).reversed())
                 .toList();
 
-        int rank = 1;
-
-        for (Lecture lecture : ranking) {
-            rank++;
-        }
 
         log.info("=== 순위 출력 종료 (총 {}개) ===", ranking.size());
 
