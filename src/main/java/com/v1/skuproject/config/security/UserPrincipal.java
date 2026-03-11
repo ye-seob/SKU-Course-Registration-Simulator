@@ -1,6 +1,6 @@
 package com.v1.skuproject.config.security;
 
-import com.v1.skuproject.domain.user.Role;
+import com.v1.skuproject.user.entity.Role;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

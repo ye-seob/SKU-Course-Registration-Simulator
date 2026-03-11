@@ -3,7 +3,7 @@ package com.v1.skuproject.config.jwt;
 import com.v1.skuproject.common.exception.BaseException;
 import com.v1.skuproject.common.exception.ErrorCode;
 import com.v1.skuproject.config.security.UserPrincipal;
-import com.v1.skuproject.domain.user.Role;
+import com.v1.skuproject.user.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
