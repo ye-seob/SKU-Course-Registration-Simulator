@@ -55,8 +55,13 @@ public class QueueProcessor {
     private void processDummy(QueueEntry entry){
         Long lectureId = entry.getLectureId();
 
-        enrollmentService.enrollDummy(lectureId);
-        exitQueue(entry);
+        try{
+            enrollmentService.enrollDummy(lectureId);
+        }catch (Exception ignored) {
+            // Dummy user이므로 실패 로깅하지 않음
+        }finally {
+            exitQueue(entry);
+        }
     }
 
     private void processUser(QueueEntry entry){
