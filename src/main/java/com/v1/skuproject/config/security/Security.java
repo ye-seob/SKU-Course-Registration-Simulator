@@ -65,6 +65,10 @@ public class Security {
                         // 수강신청은 로그인만 하면 가능
                         .requestMatchers("/api/v1/enrollments/**").authenticated()
 
+                        .requestMatchers("/api/v1/practice/ranking").permitAll()  // 랭킹은 누구나 조회
+                        .requestMatchers("/api/v1/practice/**").authenticated()   // 나머지는 로그인 필요
+
+
                         // 나머지
                         .anyRequest().authenticated()
                 )
