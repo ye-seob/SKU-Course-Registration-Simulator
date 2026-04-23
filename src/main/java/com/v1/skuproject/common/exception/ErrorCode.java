@@ -45,8 +45,10 @@ public enum ErrorCode {
 
     // 서버/DB 관련
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버 오류가 발생했습니다."),
-    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DATABASE_ERROR", "데이터베이스 처리 중 오류가 발생했습니다.");
+    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DATABASE_ERROR", "데이터베이스 처리 중 오류가 발생했습니다."),
 
+    PRACTICE_NO_ENROLLMENT(HttpStatus.BAD_REQUEST, "P001", "연습 수강신청 내역이 없습니다."),
+    PRACTICE_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "P002", "연습 기록을 찾을 수 없습니다.");
 
 
     private final HttpStatus status;
