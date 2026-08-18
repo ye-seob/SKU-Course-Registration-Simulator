@@ -55,6 +55,10 @@ public class Security {
                         // 평점은 USER만
                         .requestMatchers("/api/v1/lectures/*/rating").hasRole("USER")
 
+                        // 가입자 수, 시도 회수 조회는 누구나
+                        .requestMatchers("/api/v1/users/count").permitAll()
+                        .requestMatchers("/api/v1/enrollments/count").permitAll()
+
                         // 강의 조회는 누구나
                         .requestMatchers("/api/v1/lectures/**").permitAll()
 
