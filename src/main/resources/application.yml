@@ -5,7 +5,7 @@ spring:
     time-zone: Asia/Seoul
 
 jwt:
-  secret: "MzJieXRlc2VjcmV0a2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTA="
+  secret: ${JWT_SECRET}
 
 springdoc:
   override-with-generic-response: false

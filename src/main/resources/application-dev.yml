@@ -4,8 +4,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/mydatabase?useSSL=false&serverTimezone=Asia/Seoul
-    username: yeseob
-    password: kablose12!!
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
 
   data:
     redis:
@@ -24,7 +24,7 @@ lecture:
   operation:
     start-hour: 0
     end-hour: 24
-    start-minute: 60
+    start-minute: 59
 
 cors:
   allowed-origins:
