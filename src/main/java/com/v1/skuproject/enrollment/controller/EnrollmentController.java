@@ -3,6 +3,7 @@ package com.v1.skuproject.enrollment.controller;
 import com.v1.skuproject.common.response.ApiResponse;
 import com.v1.skuproject.common.response.ResponseHandler;
 import com.v1.skuproject.config.security.UserPrincipal;
+import com.v1.skuproject.enrollment.dto.AttemptCountResponse;
 import com.v1.skuproject.enrollment.dto.EnrollmentResponse;
 import com.v1.skuproject.enrollment.service.EnrollmentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,6 +52,15 @@ public class EnrollmentController {
         EnrollmentResponse response = enrollmentService.cancelEnrollment(userId, lectureId);
 
         log.info("수강 신청 취소 성공 userId={} lectureId={}", userId, lectureId);
+
+        return ResponseHandler.ok(response);
+    }
+
+    @Operation(summary = "수강 신청 시도 조회", description = "수강 신청 시도 조회")
+    @GetMapping("/count")
+    public ResponseEntity<ApiResponse<AttemptCountResponse>> getCount() {
+
+        AttemptCountResponse response = enrollmentService.getAttemptCount();
 
         return ResponseHandler.ok(response);
     }
