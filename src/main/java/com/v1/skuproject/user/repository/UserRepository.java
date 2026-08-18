@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
         AND u.createdAt < :time
     """)
     int deleteGuestUsers(@Param("time") LocalDateTime time);
+
+
 }

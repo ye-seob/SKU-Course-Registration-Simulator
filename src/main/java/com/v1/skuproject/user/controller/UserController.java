@@ -1,9 +1,10 @@
-package com.v1.skuproject.controller;
+package com.v1.skuproject.user.controller;
 
 import com.v1.skuproject.auth.dto.UserResponse.UserDto;
 import com.v1.skuproject.common.response.ApiResponse;
 import com.v1.skuproject.common.response.ResponseHandler;
 import com.v1.skuproject.config.security.UserPrincipal;
+import com.v1.skuproject.user.dto.UserCountResponse;
 import com.v1.skuproject.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,5 +52,16 @@ public class UserController {
         log.info("회원 탈퇴 성공 userId={}", userId);
 
         return ResponseHandler.ok("회원 탈퇴 성공");
+    }
+
+    @Operation(summary = "총 가입자 수 조회")
+    @GetMapping("/count")
+    public ResponseEntity<ApiResponse<UserCountResponse>> getUserCount() {
+
+        long count = userService.getUserCount();
+
+        UserCountResponse response = new UserCountResponse(count);
+
+        return ResponseHandler.ok(response);
     }
 }

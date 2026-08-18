@@ -50,4 +50,10 @@ public class UserService {
 
         log.info("삭제된 비회원 유저 = {}",deleted);
     }
+
+
+    @Transactional
+    public long getUserCount() {
+        return userRepository.count();
+    }
 }
