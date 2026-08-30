@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +27,13 @@ public class QueueProcessor {
      */
     public void processQueue() {
 
-        int processCount = ThreadLocalRandom.current().nextInt(20, 60);
-
-        Set<String> values = queueRepository.range(0, processCount - 1);
+        Set<String> values = queueRepository.range(0, -1);
 
         if (values == null || values.isEmpty()) {
             return;
         }
 
-        for (String value : values) {
-
+        for (String value : values){
             if (value == null) {
                 continue;
             }
