@@ -14,7 +14,6 @@ import com.v1.skuproject.lecture.repository.LectureRepository;
 import com.v1.skuproject.user.entity.User;
 import com.v1.skuproject.user.repository.UserRepository;
 import com.v1.skuproject.util.ScheduleUtil;
-import com.v1.skuproject.util.TimeChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +32,6 @@ public class EnrollmentService {
     private final LectureRepository lectureRepository;
     private final UserRepository userRepository;
     private final EnrollmentAttemptRepository enrollmentAttemptRepository;
-    private final TimeChecker timeChecker;
     @Value("${enrollment.max-courses}")
     private int maxCourses;
 
@@ -61,8 +59,6 @@ public class EnrollmentService {
         boolean success = false;
 
         try {
-
-            timeChecker.validateEnrollment();
 
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
@@ -137,8 +133,6 @@ public class EnrollmentService {
      */
     @Transactional
     public void enrollDummy(Long lectureId) {
-
-        timeChecker.validateEnrollment();
 
         Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
                 .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));

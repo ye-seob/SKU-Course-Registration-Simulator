@@ -8,7 +8,6 @@ import com.v1.skuproject.config.jwt.JwtProvider;
 import com.v1.skuproject.user.entity.Role;
 import com.v1.skuproject.user.entity.User;
 import com.v1.skuproject.user.repository.UserRepository;
-import com.v1.skuproject.util.TimeChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
-    private final TimeChecker timeChecker;
 
     @Transactional
     public Long createUser(UserRequest.SignUp request){
@@ -48,9 +46,6 @@ public class AuthService {
     @Transactional(readOnly = true)
     public UserResponse.UserDto login(UserRequest.Login request) {
 
-        if(request.getLoginMode().equals("ENROLL")){
-            timeChecker.validateLogin();
-        }
 
         User user = userRepository.findByStudentId(request.getStudentId())
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
