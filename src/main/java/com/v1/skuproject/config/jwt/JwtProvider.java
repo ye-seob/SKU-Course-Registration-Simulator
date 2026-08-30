@@ -27,14 +27,14 @@ public class JwtProvider {
     private final Key key;
     private final long ACCESS_TOKEN_EXPIRE = 1000 * 60 * 60 * 1; // 1시간
 
-    public JwtProvider(@Value("${jwt.secret}") String secretKey) {
+    public JwtProvider(@Value("${JWT_SECRET}") String secretKey) {
 
         byte[] decoded = Base64.getDecoder().decode(secretKey);
         this.key = Keys.hmacShaKeyFor(decoded);
     }
 
     /**
-      Access Token 생성
+     Access Token 생성
      */
     public String generateToken(Long userId, String studentId,Role role) {
         return Jwts.builder()
@@ -49,7 +49,7 @@ public class JwtProvider {
 
 
     /**
-      JWT 유효성 검증
+     JWT 유효성 검증
      */
     public boolean validateToken(String token) {
         try {
@@ -66,7 +66,7 @@ public class JwtProvider {
     }
 
     /**
-       jwt에서 userId studentId 얻기
+     jwt에서 userId studentId 얻기
      */
     public Long getUserId(String token) {
         try {
@@ -82,7 +82,7 @@ public class JwtProvider {
     }
 
     /**
-       jwt에서 role 얻기
+     jwt에서 role 얻기
      */
     public Role getRole(String token) {
         try {

@@ -50,7 +50,8 @@ public class Security {
                                 "/app/**",
                                 "/user/**",
                                 "/topic/**",
-                                "/queue/**"
+                                "/queue/**",
+                                "/test/reset"
                         ).permitAll()
                         // 평점은 USER만
                         .requestMatchers("/api/v1/lectures/*/rating").hasRole("USER")
