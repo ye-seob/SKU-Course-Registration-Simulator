@@ -69,19 +69,16 @@ public class QueueProcessor {
 
             queueNotifier.sendSuccess(userId, "수강신청이 완료되었습니다.");
 
-            log.info("수강신청 처리 성공 userId={} lectureId={}", userId, lectureId);
         } catch (BaseException e) {
 
             ErrorCode errorCode = e.getErrorCode();
 
             queueNotifier.sendFail(userId, errorCode.getMessage());
 
-            log.warn("수강신청 처리 실패 userId={} lectureId={} errorCode={}", userId, lectureId, errorCode.getCode());
         } catch (Exception e) {
 
             queueNotifier.sendFail(userId, "시스템 오류로 수강신청에 실패했습니다.");
 
-            log.error("수강신청 처리 실패 userId={} lectureId={}", userId, lectureId, e);
         } finally {
             exitQueue(entry);
         }

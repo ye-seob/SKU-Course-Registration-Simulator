@@ -32,10 +32,6 @@ public class QueueController {
 
         // 대기열 등록
         queueService.enter(userId, lectureId);
-
-
-        log.info("WS 대기열 진입 성공 userId={} lectureId={}", userId, lectureId);
-
     }
 
 }

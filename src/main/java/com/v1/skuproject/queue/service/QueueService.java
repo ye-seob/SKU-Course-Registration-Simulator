@@ -31,10 +31,6 @@ public class QueueService {
 
         queueRepository.add(value, System.currentTimeMillis());
 
-        if(userId >= 100_000L){
-            return;
-        }
-
         // 실제 유저만 ws 등록
         queueSubscriberService.subscribe(userId, lectureId);
         queueNotifier.sendRank(userId, getRank(userId, lectureId));

@@ -55,8 +55,6 @@ public class AuthService {
 
         UserResponse.UserDto userDto = UserResponse.UserDto.from(user, token);
 
-        log.info("로그인 성공 userId={}", user.getId());
-
         return userDto;
     }
 

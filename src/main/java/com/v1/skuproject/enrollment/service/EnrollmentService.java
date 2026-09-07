@@ -106,14 +106,6 @@ public class EnrollmentService {
 
             success = true;
 
-            log.info(
-                    "수강신청 성공 userId={} lectureId={} enrollment={}/{}",
-                    userId,
-                    lectureId,
-                    lecture.getEnrollment(),
-                    lecture.getCapacity()
-            );
-
             return EnrollmentResponse.from(enrollment);
 
         } finally {
