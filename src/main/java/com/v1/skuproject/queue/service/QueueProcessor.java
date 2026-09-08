@@ -40,25 +40,11 @@ public class QueueProcessor {
 
             QueueEntry entry = QueueEntry.decode(value);
 
-            // 더미 유저 처리
-            if (entry.isDummy()) {
-                processDummy(entry);
-            } else {
-                processUser(entry);
-            }
-        }
-    }
-    private void processDummy(QueueEntry entry){
-        Long lectureId = entry.getLectureId();
+            processUser(entry);
 
-        try{
-            enrollmentService.enrollDummy(lectureId);
-        }catch (Exception ignored) {
-            // Dummy user이므로 실패 로깅하지 않음
-        }finally {
-            exitQueue(entry);
         }
     }
+    
 
     private void processUser(QueueEntry entry){
         Long userId = entry.getUserId();
