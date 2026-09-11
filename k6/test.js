@@ -5,7 +5,7 @@ const BASE_HTTP = 'http://localhost:8081';
 const BASE_WS = 'ws://localhost:8081/ws';
 const LECTURE_ID = 1;
 
-const VU_COUNT = 1;
+const VU_COUNT = 2000;
 
 export const options = {
   scenarios: {

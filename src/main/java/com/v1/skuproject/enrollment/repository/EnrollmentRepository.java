@@ -20,6 +20,15 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     Optional<Enrollment> findByUser_IdAndLecture_Id(Long userId, Long lectureId);
 
+    @Query(
+    """
+    SELECT e
+    FROM Enrollment e
+    JOIN FETCH e.lecture
+    WHERE e.user.id = :userId
+    """)
+    List<Enrollment> findAllByUserIdWithLecture(@Param("userId") Long userId);
+
     @Modifying
     @Query("""
             DELETE FROM Enrollment e

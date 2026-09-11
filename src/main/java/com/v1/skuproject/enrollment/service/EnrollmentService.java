@@ -59,43 +59,28 @@ public class EnrollmentService {
         boolean success = false;
 
         try {
-
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+            User user = userRepository.getReferenceById(userId);
 
             Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
                     .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
 
-            // 중복 체크
+            List<Enrollment> userEnrollments = enrollmentRepository.findAllByUserIdWithLecture(userId);
 
-            if (enrollmentRepository.findByUser_IdAndLecture_Id(userId, lectureId).isPresent()) {
+            boolean isDuplicate = userEnrollments.stream()
+                    .anyMatch(e -> e.getLecture().getId().equals(lectureId));
 
-                log.info("수강신청 실패(DUPLICATE) userId={} lectureId={}", userId, lectureId);
-
+            if (isDuplicate) {
                 throw new BaseException(ErrorCode.ENROLLMENT_DUPLICATE);
-
-            }
-
-            List<Enrollment> userEnrollments = enrollmentRepository.findAllByUser(user);
-
-            if (userEnrollments.size() >= maxCourses) {
-
-                log.info("수강신청 실패(MAX_LIMIT) userId={} lectureId={}", userId, lectureId);
-
-                throw new BaseException(ErrorCode.ENROLLMENT_MAX_LIMIT_EXCEEDED);
             }
 
             for (Enrollment e : userEnrollments) {
-
-                if (ScheduleUtil.hasConflict(
-                        lecture.getSchedule(),
-                        e.getLecture().getSchedule())
-                ) {
-
-                    log.info("수강신청 실패(TIME_CONFLICT) userId={} lectureId={}", userId, lectureId);
-
+                if (ScheduleUtil.hasConflict(lecture.getSchedule(), e.getLecture().getSchedule())) {
                     throw new BaseException(ErrorCode.ENROLLMENT_TIME_CONFLICT);
                 }
+            }
+
+            if (userEnrollments.size() >= maxCourses) {
+                throw new BaseException(ErrorCode.ENROLLMENT_MAX_LIMIT_EXCEEDED);
             }
 
             lecture.enroll();
@@ -118,18 +103,6 @@ public class EnrollmentService {
                     )
             );
         }
-    }
-
-    /**
-     * 더미 유저 수강신청 처리 (큐용)
-     */
-    @Transactional
-    public void enrollDummy(Long lectureId) {
-
-        Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
-                .orElseThrow(() -> new BaseException(ErrorCode.LECTURE_NOT_FOUND));
-
-        lecture.enroll();
     }
 
     /**
